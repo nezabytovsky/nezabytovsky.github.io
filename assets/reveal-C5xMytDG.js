@@ -128,7 +128,7 @@ You can browse selected works in the Portfolio, explore interactive particles on
   <a href="/shaders.html" class="btn-ghost-pill">SHADERS</a>
 </div>
 
-## Areas I work with
+## Specializations
 
 - Realtime Graphics
 - Shader Development
