@@ -72,7 +72,7 @@ import{F as e,W as t,a as n,et as r,o as i,s as a}from"./three.module-DmW5sRKN.j
     float z = (p_x1.y - p_x0.y) - (p_y1.x - p_y0.x);
     return vec3(x, y, z) / (2.0 * e);
   }
-`;function c({count:a=16e4,pointSize:c=26}={}){let l=new i,u=new Float32Array(a*3),d=new Float32Array(a*3);for(let e=0;e<a;e++){let t=Math.random()*Math.PI*2,n=Math.acos(2*Math.random()-1),r=Math.cbrt(Math.random());u[e*3]=r*Math.sin(n)*Math.cos(t)*5,u[e*3+1]=r*Math.sin(n)*Math.sin(t)*3.6,u[e*3+2]=r*Math.cos(n)*3.6,d[e*3]=Math.random(),d[e*3+1]=Math.random(),d[e*3+2]=Math.random()*.5+.5}l.setAttribute(`position`,new n(u,3)),l.setAttribute(`aSeed`,new n(d,3));let f=new t({uniforms:{uTime:{value:0},uMouse:{value:new r(0,0,-999)},uMouseVel:{value:new r(0,0,0)},uMouseStrength:{value:0},uMouseRadius:{value:5},uAttract:{value:4.5},uDrag:{value:1.5},uFlowSpeed:{value:.01},uNoiseScale:{value:.18},uAmplitude:{value:4.5},uLifeSpeed:{value:.13},uPointSize:{value:c},uTexture:{value:o()}},vertexShader:`
+`;function c({count:a=16e4,pointSize:c=26}={}){let l=new i,u=new Float32Array(a*3),d=new Float32Array(a*3);for(let e=0;e<a;e++){let t=Math.random()*Math.PI*2,n=Math.acos(2*Math.random()-1),r=Math.cbrt(Math.random());u[e*3]=r*Math.sin(n)*Math.cos(t)*5,u[e*3+1]=r*Math.sin(n)*Math.sin(t)*3.6,u[e*3+2]=r*Math.cos(n)*3.6,d[e*3]=Math.random(),d[e*3+1]=Math.random(),d[e*3+2]=Math.random()*.5+.5}l.setAttribute(`position`,new n(u,3)),l.setAttribute(`aSeed`,new n(d,3));let f=new t({uniforms:{uTime:{value:0},uMouse:{value:new r(0,0,-999)},uMouseVel:{value:new r(0,0,0)},uMouseStrength:{value:0},uMouseRadius:{value:5},uAttract:{value:4.5},uDrag:{value:1.5},uFlowSpeed:{value:.01},uNoiseScale:{value:.18},uAmplitude:{value:4.5},uLifeSpeed:{value:.13},uFadeIn:{value:1},uPointSize:{value:c},uTexture:{value:o()}},vertexShader:`
       #define STEPS 8
       attribute vec3 aSeed;
       varying float vAlpha;
@@ -88,6 +88,7 @@ import{F as e,W as t,a as n,et as r,o as i,s as a}from"./three.module-DmW5sRKN.j
       uniform float uNoiseScale;
       uniform float uAmplitude;
       uniform float uLifeSpeed;
+      uniform float uFadeIn;
       uniform float uPointSize;
 
       ${s}
@@ -137,7 +138,7 @@ import{F as e,W as t,a as n,et as r,o as i,s as a}from"./three.module-DmW5sRKN.j
 
         // Fade in at birth and out at death so the recycle is invisible.
         float lifeFade = sin(life * 3.14159265);
-        vAlpha = (0.3 + aSeed.y * 0.5 + s * 0.35) * lifeFade + infl * 0.5;
+        vAlpha = ((0.3 + aSeed.y * 0.5 + s * 0.35) * lifeFade + infl * 0.5) * uFadeIn;
       }
     `,fragmentShader:`
       uniform sampler2D uTexture;
