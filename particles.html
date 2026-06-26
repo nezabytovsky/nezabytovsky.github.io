@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Particle Systems — VFX Artist</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <script type="module" crossorigin src="/assets/particles-D9J0APjA.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/three.module-DYuz7n-v.js">
+  <link rel="modulepreload" crossorigin href="/assets/gravity-BsZWuJVc.js">
+  <link rel="modulepreload" crossorigin href="/assets/cursor-field-Dj8aI7LK.js">
+  <link rel="modulepreload" crossorigin href="/assets/destruction-Dxrpgliy.js">
+  <link rel="modulepreload" crossorigin href="/assets/ember-wind-D4YB0LsB.js">
+  <link rel="modulepreload" crossorigin href="/assets/fluid-D492XpX5.js">
+  <link rel="modulepreload" crossorigin href="/assets/main-BxXRgNEu.js">
+  <link rel="modulepreload" crossorigin href="/assets/rings-BAEEAhgE.js">
+  <link rel="modulepreload" crossorigin href="/assets/turbulent-BPlVTm0k.js">
+  <link rel="modulepreload" crossorigin href="/assets/portfolio-bg-BJQuwpMB.js">
+  <link rel="stylesheet" crossorigin href="/assets/three-C28hme1a.css">
+</head>
+<body style="overflow-y: auto; background: #050510;">
+  <div id="site-nav"></div>
+
+  <div style="position: relative; z-index: 5; padding: 120px var(--spacing-xxl) 0; text-align: center;">
+    <h1 style="font-family: var(--font-display); font-size: clamp(24px, 4vw, 44px); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: var(--on-primary); margin-bottom: var(--spacing-xs);">PARTICLE SYSTEMS</h1>
+    <p style="font-family: var(--font-body); font-size: 13px; color: var(--on-primary-mute); letter-spacing: 0.32px; margin-bottom: var(--spacing-huge);">REAL-TIME GPU PARTICLE EFFECTS &amp; SIMULATIONS — OPEN A SCENE TO INTERACT</p>
+  </div>
+
+  <div class="fx-grid">
+    <a class="fx-card" href="/fluid-sim.html">
+      <canvas id="pp-fluid"></canvas>
+      <span class="fx-card-cta">OPEN →</span>
+      <div class="fx-card-overlay">
+        <div class="fx-card-title">PARTICLE FLOW</div>
+        <div class="fx-card-desc">Particle-based fluid dynamics</div>
+      </div>
+    </a>
+    <a class="fx-card" href="/ember-wind.html">
+      <canvas id="pp-fire"></canvas>
+      <span class="fx-card-cta">OPEN →</span>
+      <div class="fx-card-overlay">
+        <div class="fx-card-title">EMBER WIND</div>
+        <div class="fx-card-desc">Volumetric particle combustion</div>
+      </div>
+    </a>
+    <a class="fx-card" href="/rings.html">
+      <canvas id="pp-rings"></canvas>
+      <span class="fx-card-cta">OPEN →</span>
+      <div class="fx-card-overlay">
+        <div class="fx-card-title">RINGS</div>
+        <div class="fx-card-desc">Procedural spell &amp; energy VFX</div>
+      </div>
+    </a>
+    <a class="fx-card" href="/destruction.html">
+      <canvas id="pp-rbd"></canvas>
+      <span class="fx-card-cta">OPEN →</span>
+      <div class="fx-card-overlay">
+        <div class="fx-card-title">DESTRUCTION</div>
+        <div class="fx-card-desc">Rigid-body shards — click to shatter</div>
+      </div>
+    </a>
+    <a class="fx-card" href="/turbulent.html">
+      <canvas id="pp-turb"></canvas>
+      <span class="fx-card-cta">OPEN →</span>
+      <div class="fx-card-overlay">
+        <div class="fx-card-title">TURBULENT</div>
+        <div class="fx-card-desc">Curl-noise turbulence driving streaks of light</div>
+      </div>
+    </a>
+    <a class="fx-card" href="/morph.html">
+      <canvas id="pp-morph"></canvas>
+      <span class="fx-card-cta">OPEN →</span>
+      <div class="fx-card-overlay">
+        <div class="fx-card-title">MORPH</div>
+        <div class="fx-card-desc">Spiral torus nebula with color gradient</div>
+      </div>
+    </a>
+    <a class="fx-card" href="/gravity.html">
+      <canvas id="pp-grav"></canvas>
+      <span class="fx-card-cta">OPEN →</span>
+      <div class="fx-card-overlay">
+        <div class="fx-card-title">GRAVITY</div>
+        <div class="fx-card-desc">Rigid-body bounce on a floor plane</div>
+      </div>
+    </a>
+    <a class="fx-card" href="/cursor-field.html">
+      <canvas id="pp-cursor"></canvas>
+      <span class="fx-card-cta">OPEN →</span>
+      <div class="fx-card-overlay">
+        <div class="fx-card-title">CURSOR FIELD</div>
+        <div class="fx-card-desc">Hover to repel, click to ignite particles</div>
+      </div>
+    </a>
+  </div>
+
+</body>
+</html>

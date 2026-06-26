@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shader Gallery — VFX Artist</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <script type="module" crossorigin src="/assets/shaders-BH6wz9nK.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/three.module-DYuz7n-v.js">
+  <link rel="modulepreload" crossorigin href="/assets/portfolio-bg-BJQuwpMB.js">
+  <link rel="modulepreload" crossorigin href="/assets/fence-n5qxocOk.js">
+  <link rel="modulepreload" crossorigin href="/assets/flow-2UL2Zdbo.js">
+  <link rel="modulepreload" crossorigin href="/assets/flower-XzySnlx5.js">
+  <link rel="modulepreload" crossorigin href="/assets/fractal-BvbYRS0y.js">
+  <link rel="modulepreload" crossorigin href="/assets/grass-BVmQSDfj.js">
+  <link rel="modulepreload" crossorigin href="/assets/lava-BWLLvj8o.js">
+  <link rel="modulepreload" crossorigin href="/assets/raymarch-D3up6qBV.js">
+  <link rel="modulepreload" crossorigin href="/assets/reaction-diffusion-BwLO7xRv.js">
+  <link rel="modulepreload" crossorigin href="/assets/stone-BtSIpMo_.js">
+  <link rel="stylesheet" crossorigin href="/assets/three-C28hme1a.css">
+</head>
+<body style="overflow-y: auto; background: #050510;">
+  <div id="site-nav"></div>
+
+  <div style="position: relative; z-index: 5; padding: 120px var(--spacing-xxl) 0; text-align: center;">
+    <h1 style="font-family: var(--font-display); font-size: clamp(24px, 4vw, 44px); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: var(--on-primary); margin-bottom: var(--spacing-xs);">SHADER GALLERY</h1>
+    <p style="font-family: var(--font-body); font-size: 13px; color: var(--on-primary-mute); letter-spacing: 0.32px; margin-bottom: var(--spacing-huge);">INTERACTIVE GLSL SHADERS — OPEN A SCENE AND TWEAK UNIFORMS IN REAL TIME</p>
+  </div>
+
+  <div class="gallery-grid">
+    <div class="gallery-card">
+      <canvas id="pv-la"></canvas>
+      <div class="gallery-card-body">
+        <div class="gallery-card-title">LAVA SHADER</div>
+        <div class="gallery-card-desc">Domain-warped FBM height field with crack glow &amp; subsurface</div>
+        <a href="/shader-lava.html" class="btn-ghost-pill">OPEN <span class="arrow">→</span></a>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <canvas id="pv-gr"></canvas>
+      <div class="gallery-card-body">
+        <div class="gallery-card-title">GRASS FIELD</div>
+        <div class="gallery-card-desc">Multi-layer blade SDF with wind animation</div>
+        <a href="/shader-grass.html" class="btn-ghost-pill">OPEN <span class="arrow">→</span></a>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <canvas id="pv-st"></canvas>
+      <div class="gallery-card-body">
+        <div class="gallery-card-title">STONE WALL</div>
+        <div class="gallery-card-desc">Voronoi cobblestone with bump &amp; specular</div>
+        <a href="/shader-stone.html" class="btn-ghost-pill">OPEN <span class="arrow">→</span></a>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <canvas id="pv-fenc"></canvas>
+      <div class="gallery-card-body">
+        <div class="gallery-card-title">WOOD FENCE</div>
+        <div class="gallery-card-desc">Procedural boards with grain, cracks &amp; chevron joints</div>
+        <a href="/shader-fence.html" class="btn-ghost-pill">OPEN <span class="arrow">→</span></a>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <canvas id="pv-flw"></canvas>
+      <div class="gallery-card-body">
+        <div class="gallery-card-title">KALEIDOSCOPIC FLOWER</div>
+        <div class="gallery-card-desc">Layered petal SDF with animated palette</div>
+        <a href="/shader-flower.html" class="btn-ghost-pill">OPEN <span class="arrow">→</span></a>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <canvas id="pv-fr"></canvas>
+      <div class="gallery-card-body">
+        <div class="gallery-card-title">FRACTAL EXPLORER</div>
+        <div class="gallery-card-desc">Mandelbrot + Julia set — zoom, pan &amp; recolor</div>
+        <a href="/shader-fractal.html" class="btn-ghost-pill">OPEN <span class="arrow">→</span></a>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <canvas id="pv-fl"></canvas>
+      <div class="gallery-card-body">
+        <div class="gallery-card-title">NOISE FLOW FIELD</div>
+        <div class="gallery-card-desc">GPU-accelerated particle flow through curl-noise — vertex shader</div>
+        <a href="/shader-flow.html" class="btn-ghost-pill">OPEN <span class="arrow">→</span></a>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <canvas id="pv-rm"></canvas>
+      <div class="gallery-card-body">
+        <div class="gallery-card-title">RAYMARCHING SDF</div>
+        <div class="gallery-card-desc">Signed distance field raytracing — shapes &amp; light</div>
+        <a href="/shader-raymarch.html" class="btn-ghost-pill">OPEN <span class="arrow">→</span></a>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <canvas id="pv-rd"></canvas>
+      <div class="gallery-card-body">
+        <div class="gallery-card-title">REACTION-DIFFUSION</div>
+        <div class="gallery-card-desc">Gray-Scott chemical waves — feed, kill &amp; diffusion</div>
+        <a href="/shader-reaction-diffusion.html" class="btn-ghost-pill">OPEN <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
