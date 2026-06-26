@@ -1,4 +1,4 @@
-import{$ as e,M as t,O as n,Q as r,U as i,V as a,W as o,c as s,et as c,j as l,n as u,tt as d,y as f}from"./three.module-DmW5sRKN.js";import{a as p,i as m,n as h,o as g,r as _,t as v}from"./UnrealBloomPass-DKLnwQAI.js";import{t as ee}from"./OrbitControls-BibGpiO0.js";import{t as y}from"./main-CP78fqak.js";var b={name:`AfterimageShader`,uniforms:{damp:{value:.96},tOld:{value:null},tNew:{value:null}},vertexShader:`
+import{$ as e,M as t,O as n,Q as r,U as i,V as a,W as o,c as s,et as c,j as l,n as u,tt as d,y as f}from"./three.module-DmW5sRKN.js";import{a as p,i as m,n as h,o as g,r as _,t as v}from"./UnrealBloomPass-DKLnwQAI.js";import{t as ee}from"./OrbitControls-BibGpiO0.js";import{t as y}from"./main-B9Tw8pT9.js";var b={name:`AfterimageShader`,uniforms:{damp:{value:.96},tOld:{value:null},tNew:{value:null}},vertexShader:`
 
 		varying vec2 vUv;
 
