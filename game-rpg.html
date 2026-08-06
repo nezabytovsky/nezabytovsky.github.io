@@ -29,7 +29,7 @@
         }
 
         h1, h2, h3, .fantasy-title {
-            font-family: 'Cinzel', serif;
+            font-family: 'Cinzel', serif !important;
             color: var(--text-title);
         }
 
@@ -39,7 +39,9 @@
             display: flex;
             flex-direction: column;
             background-color: rgba(26, 26, 36, 0.4);
-            backdrop-filter: blur(5px);
+            /* NB: backdrop-filter создаёт containing block для position:fixed-потомков
+               (нижняя панель, шторка). Без blur они привязаны к viewport и не уезжают
+               при внутреннем скролле .game-container (SPA-фикс скролла). */
         }
 
         .hud-panel {
@@ -273,6 +275,29 @@
                 border-radius: 16px 16px 0 0;
                 box-shadow: 0 -10px 40px rgba(0,0,0,0.7);
             }
+        }
+
+        /* === ФИКС СКРОЛЛА И "ПРЫГАЮЩЕЙ" НИЖНЕЙ ПАНЕЛИ === */
+        
+        html, body {
+            height: 100%;
+            /* Намертво блокируем скролл всей страницы браузера */
+            overflow: hidden !important; 
+            /* Отключаем эффект "резинки" при вытягивании за края */
+            overscroll-behavior-y: none; 
+        }
+
+        .game-container {
+            /* Теперь контейнер игры жестко зафиксирован по высоте экрана */
+            height: 100vh !important;
+            height: 100dvh !important; 
+            min-height: auto !important;
+            
+            /* Включаем внутренний скролл только для текста игры */
+            overflow-y: auto;
+            overscroll-behavior-y: contain; 
+            /* Возвращаем плавную физику скролла для iPhone */
+            -webkit-overflow-scrolling: touch; 
         }
     </style>
 </head>
@@ -2464,7 +2489,7 @@
                     if (choice.cost.hp) Logic.applyDamage('player', choice.cost.hp);
                     if (choice.cost.mp) gameState.mp -= choice.cost.mp;
                 }
-                if (choice.costs) this.executeActions(choice.costs);
+                if (choice.actions) this.executeActions(choice.actions);
                 
                 if (finalSuccess) {
                     if (choice.successActions) this.executeActions(choice.successActions);
@@ -3080,6 +3105,33 @@
                 // Полностью закрываем мобильное меню. На ПК сайдбар покажется сам благодаря классам Tailwind (md:flex)
                 View.closeHeroSheet(); 
             }
+        });
+
+        // === ЗАЩИТА ОТ КНОПКИ "НАЗАД" (HISTORY API) ===
+        // Создаем фиктивную запись в истории браузера при старте
+        window.history.pushState({ page: "game" }, "", "");
+
+        window.addEventListener("popstate", (e) => {
+            // Мгновенно возвращаем фиктивную запись обратно, 
+            // чтобы браузер не смог уйти с нашей страницы
+            window.history.pushState({ page: "game" }, "", "");
+
+            // 1. Если на телефоне открыта шторка персонажа — просто закрываем её
+            const heroScreen = document.getElementById('hero-screen');
+            if (window.innerWidth < 768 && !heroScreen.classList.contains('hidden')) {
+                View.closeHeroSheet();
+                return; // Останавливаем выполнение, кнопка "Назад" отработала как крестик
+            }
+
+            // 2. Если открыты другие модальные окна — закрываем их
+            const rulesModal = document.getElementById('rules-modal');
+            if (!rulesModal.classList.contains('hidden')) View.toggleRules();
+            
+            const debugModal = document.getElementById('debug-modal');
+            if (!debugModal.classList.contains('hidden')) View.toggleDebugMenu();
+
+            const tutorialModal = document.getElementById('tutorial-modal');
+            if (tutorialModal && !tutorialModal.classList.contains('hidden')) View.closeTutorialModal();
         });
     </script>
 </body>
