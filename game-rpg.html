@@ -1,14 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <title>Побег из Лабиринта Дракона</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
-
         :root {
             --bg-color: #0f0f11;
             --panel-bg: #1a1a24;
@@ -110,18 +110,15 @@
             height: 100%;
             transition: width 0.5s ease;
         }
-
+        
         .hp-fill { background-color: #e53e3e; }
-
         .mp-fill { background-color: #3182ce; }
-
         .xp-fill { background-color: #4ade80; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .fade-in {
             animation: fadeIn 0.5s forwards;
         }
@@ -132,23 +129,18 @@
         }
 
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); border-radius: 4px; }
-
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #4a4a5c; border-radius: 4px; }
-
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #e5b567; }
 
         .dice-roll-anim { animation: diceTumble 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-
         @keyframes diceTumble {
             0% { transform: translateY(-200px) rotate(0deg) scale(0.5); opacity: 0; }
             50% { transform: translateY(20px) rotate(360deg) scale(1.2); opacity: 1; }
             100% { transform: translateY(0) rotate(720deg) scale(1); opacity: 1; }
         }
-
+        
         .pulse-neutral { animation: pulseNeutral 0.6s ease-out forwards; }
-
         @keyframes pulseNeutral {
             0% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(229, 181, 103, 0)); }
             50% { transform: scale(1.2); filter: drop-shadow(0 0 20px rgba(229, 181, 103, 0.8)); }
@@ -156,7 +148,6 @@
         }
 
         .pulse-success { animation: pulseSuccess 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-
         @keyframes pulseSuccess {
             0% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(74, 222, 128, 0)) brightness(1); }
             30% { transform: scale(1.3); filter: drop-shadow(0 0 40px rgba(74, 222, 128, 1)) brightness(1.4); }
@@ -164,7 +155,6 @@
         }
 
         .pulse-fail { animation: pulseFail 0.7s ease-in-out forwards; }
-
         @keyframes pulseFail {
             0% { transform: scale(1) translateX(0); filter: drop-shadow(0 0 0px rgba(239, 68, 68, 0)) grayscale(0%);}
             20% { transform: scale(1.1) translateX(-15px) rotate(-10deg); filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.8)) grayscale(50%);}
@@ -174,7 +164,6 @@
         }
 
         .pulse-crit { animation: pulseCrit 0.8s ease-out forwards; }
-
         @keyframes pulseCrit {
             0% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(234, 179, 8, 0)); }
             50% { transform: scale(1.5) rotate(15deg); filter: drop-shadow(0 0 50px rgba(234, 179, 8, 1)) brightness(1.5); }
@@ -182,7 +171,6 @@
         }
 
         .pulse-crit-bad { animation: pulseCritBad 0.8s ease-out forwards; }
-
         @keyframes pulseCritBad {
             0% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(185, 28, 28, 0)); }
             50% { transform: scale(1.6) rotate(-10deg); filter: drop-shadow(0 0 60px rgba(185, 28, 28, 1)) brightness(0.6) sepia(1) hue-rotate(310deg); }
@@ -190,7 +178,6 @@
         }
 
         .status-float { animation: statusFloatAnim 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-
         @keyframes statusFloatAnim {
             0% { transform: translateY(10px) scale(0.8); opacity: 0; }
             20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
@@ -199,7 +186,6 @@
         }
 
         .phase-transition { animation: phasePop 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-
         @keyframes phasePop {
             0% { transform: scale(0.8); opacity: 0; filter: blur(10px); }
             15% { transform: scale(1.1); opacity: 1; filter: blur(0px); }
@@ -212,11 +198,9 @@
             60% { transform: translateY(-3px) scale(1.05); opacity: 1; }
             100% { transform: translateY(0) scale(1); opacity: 1; }
         }
-
         .mod-pop { animation: popInMod 0.3s ease-out forwards; }
 
         .combat-expand { height: 50% !important; opacity: 1 !important; padding-top: 1rem; }
-
         .combat-top-shrink { height: 50% !important; }
 
         #notification-container {
@@ -224,7 +208,6 @@
             z-index: 300; pointer-events: none; display: flex; flex-direction: column;
             gap: 10px; width: 90%; max-width: 400px;
         }
-
         .story-toast {
             background: rgba(26, 26, 36, 0.95); border: 1px solid #e5b567; border-left: 4px solid #e5b567;
             color: #d3c4a9; padding: 12px 24px; border-radius: 4px;
@@ -232,13 +215,9 @@
             text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.8);
             animation: toastSlideIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; opacity: 0;
         }
-
         .story-toast.fail-toast { border-color: #e53e3e; border-left-color: #e53e3e; color: #feb2b2; }
-
         .story-toast.fade-out { animation: toastFadeOut 0.5s ease forwards; }
-
         @keyframes toastSlideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
         @keyframes toastFadeOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-10px); opacity: 0; } }
 
         @keyframes floatUpFade {
@@ -247,7 +226,6 @@
             30% { transform: translate(-50%, -25px) scale(1.2); opacity: 1; }
             100% { transform: translate(-50%, -90px) scale(0.8); opacity: 0; text-shadow: none; }
         }
-
         .floating-damage {
             position: fixed; left: 50%; top: 45%; pointer-events: none;
             font-family: 'Cinzel', serif; font-weight: bold;
@@ -256,7 +234,6 @@
         }
 
         .shake-mild { animation: shakeMild 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-
         @keyframes shakeMild {
             0%, 100% { transform: translate3d(0, 0, 0); }
             10%, 90% { transform: translate3d(-2px, 1px, 0) rotate(-0.5deg); }
@@ -266,7 +243,6 @@
         }
 
         /* Фикс для мобильных браузеров: динамическая высота и системные отступы */
-
         .game-container {
             min-height: 100vh;
             min-height: 100dvh;
@@ -280,7 +256,6 @@
         }
 
         /* Сбрасываем отступы на десктопе */
-
         @media (min-width: 768px) {
             .game-container { padding-bottom: 0; }
             .story-panel { min-height: 100vh; min-height: 100dvh; }
@@ -291,7 +266,6 @@
         }
 
         /* Мобильная шторка «Персонаж»: стиль только под 767px, на десктопе работает .hud-panel */
-
         @media (max-width: 767px) {
             .hero-mobile-sheet {
                 background: #1a1a24;
@@ -1436,6 +1410,7 @@
             _tutorialResolve: null,
             isTutorialOpen: false,       // Открыто ли окно обучения
             notificationQueue: [],       // Очередь уведомлений, ждущих закрытия туториала
+            isProcessingNotifications: false, // НОВОЕ: Контроль последовательной анимации
 
             async showTutorialModalAsync(title, html) {
                 return new Promise((resolve) => {
@@ -1467,44 +1442,55 @@
                 setTimeout(() => { 
                     m.classList.add('hidden'); 
                     this.isTutorialOpen = false; // Окно закрыто
-                    if (this.notificationQueue.length > 0) {
-                        this.notificationQueue.forEach((notif, index) => {
-                            setTimeout(() => {
-                                this.showNotification(notif.msg, notif.isFail);
-                            }, index * 600);
-                        });
-                        this.notificationQueue = [];
-                    }
+                    
+                    // НОВОЕ: Запускаем конвейер уведомлений после закрытия модалки
+                    this.processNotifications();
+
                     if (this._tutorialResolve) {
                         this._tutorialResolve();
                         this._tutorialResolve = null;
                     }
                 }, 300);
             },
+            
             showNotification(msg, isFail = false) {
-                // Защита от «зависшего» флага обучения: если isTutorialOpen взведён,
-                // но окно туториала фактически закрыто — сбрасываем флаг и выплёскиваем очередь.
-                // Иначе уведомления (напр. лут после боя) уходят в очередь и не показываются.
+                // Теперь мы ВСЕГДА кладем уведомление в общую очередь
+                this.notificationQueue.push({ msg, isFail });
+                // И пробуем запустить конвейер
+                this.processNotifications();
+            },
+
+            // НОВАЯ ФУНКЦИЯ: Глобальный конвейер тостов
+            processNotifications() {
+                // Если очередь пуста или мы уже анимируем другой тост - ждем
+                if (this.isProcessingNotifications || this.notificationQueue.length === 0) return;
+
+                // Если открыто окно обучения (или вот-вот откроется) - ставим очередь на паузу
                 const tModal = document.getElementById('tutorial-modal');
                 const modalVisible = tModal && !tModal.classList.contains('hidden');
-                if (this.isTutorialOpen && !modalVisible) {
-                    this.isTutorialOpen = false;
-                    if (this.notificationQueue.length > 0) {
-                        const q = this.notificationQueue;
-                        this.notificationQueue = [];
-                        q.forEach((n, i) => setTimeout(() => this.showNotification(n.msg, n.isFail), i * 600));
-                    }
-                }
-                // Если обучение открыто, прячем уведомление в очередь
-                if (this.isTutorialOpen) {
-                    this.notificationQueue.push({ msg, isFail });
-                    return;
-                }
+                if (this.isTutorialOpen || modalVisible) return;
+
+                // Блокируем конвейер
+                this.isProcessingNotifications = true;
+                
+                // Берем первое уведомление из очереди
+                const notif = this.notificationQueue.shift();
+
+                // Отрисовываем его
                 const c = document.getElementById('notification-container');
                 const t = document.createElement('div');
-                t.className = `story-toast ${isFail ? 'fail-toast' : ''}`; t.innerHTML = `${isFail ? '⚠️' : '👁️'} ${msg}`;
+                t.className = `story-toast ${notif.isFail ? 'fail-toast' : ''}`; 
+                t.innerHTML = `${notif.isFail ? '⚠️' : '👁️'} ${notif.msg}`;
                 c.appendChild(t);
+                
+                // Таймер исчезновения
                 setTimeout(() => { t.classList.add('fade-out'); setTimeout(() => t.remove(), 500); }, 4000);
+
+                // Самая важная часть: разрешаем показать СЛЕДУЮЩИЙ тост только через 600мс
+                setTimeout(() => {
+                    this.isProcessingNotifications = false;
+                    this.processNotifications();
+                }, 600);
             },
             showFloatingDamage(text, classes, delayMs = 0) {
                 setTimeout(() => {
