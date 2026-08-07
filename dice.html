@@ -264,26 +264,41 @@
     <!-- ==========================================
          HTML ОВЕРЛЕЙ АНИМАЦИИ
          ========================================== -->
-    <div id="dice-overlay" class="fixed inset-0 z-[105] flex flex-col items-center justify-center pointer-events-none hidden bg-black/90 backdrop-blur-md transition-opacity duration-300 opacity-0">
+    <!-- Убрали pointer-events-none, добавили overflow-y-auto и настроили мобильное выравнивание (justify-start) -->
+    <div id="dice-overlay" class="fixed inset-0 z-[105] flex flex-col items-center justify-start md:justify-center overflow-y-auto overflow-x-hidden pt-10 pb-20 md:py-0 hidden bg-black/90 backdrop-blur-md transition-opacity duration-300 opacity-0">
         
-        <div id="dice-target-container" class="absolute top-10 md:top-16 text-xl md:text-3xl text-gray-300 cinzel-font bg-black/50 px-6 py-2 rounded-full border border-gray-700" style="text-shadow: 1px 1px 3px black;">
+        <!-- Сделали относительное позиционирование на мобильных (чтобы не наезжал на кубики) и добавили z-30 -->
+        <div id="dice-target-container" class="relative md:absolute mb-6 md:mb-0 md:top-16 text-xl md:text-3xl text-gray-300 cinzel-font bg-black/50 px-6 py-2 rounded-full border border-gray-700 z-30" style="text-shadow: 1px 1px 3px black;">
             <span data-i18n="overlayTarget">Цель (Сложность):</span> <span id="dice-target-value" class="text-yellow-400 font-bold ml-2 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">15</span>
         </div>
         
-        <div id="dice-render-container" class="flex flex-wrap justify-center items-center gap-4 md:gap-8 min-h-[200px] px-4 w-full max-w-6xl mt-16">
+        <div id="dice-render-container" class="flex flex-wrap justify-center items-center gap-2 md:gap-8 min-h-[150px] px-2 w-full max-w-6xl mt-2 md:mt-16 z-10">
             <!-- Кубики генерируются здесь -->
         </div>
         
-        <div id="dice-modifiers" class="flex flex-wrap gap-3 mt-8 min-h-[2.5rem] items-center justify-center font-bold text-xl md:text-2xl cinzel-font" style="text-shadow: 1px 1px 3px black;"></div>
+        <!-- Добавили z-20 -->
+        <div id="dice-modifiers" class="flex flex-wrap gap-2 md:gap-3 mt-6 min-h-[2.5rem] items-center justify-center font-bold text-xl md:text-2xl cinzel-font z-20 relative" style="text-shadow: 1px 1px 3px black;"></div>
 
-        <div class="h-32 mt-4 flex flex-col items-center justify-center">
-            <div id="dice-total-wrap" class="font-bold text-3xl md:text-4xl text-gray-400 mb-2 transition-opacity duration-300 opacity-0 cinzel-font flex items-center" style="text-shadow: 1px 1px 3px black;">
-                <span data-i18n="overlayTotal">Итого:</span> <span id="dice-total-value" class="text-white text-5xl md:text-6xl ml-4 font-bold">20</span>
+        <!-- Добавили подложку (bg-black/70), свечение и z-30 для идеальной видимости поверх кубиков -->
+        <div class="mt-4 md:mt-6 flex flex-col items-center justify-center z-30 relative w-full px-4">
+            <div id="dice-total-wrap" class="font-bold text-3xl md:text-4xl text-gray-400 mb-2 transition-opacity duration-300 opacity-0 cinzel-font flex items-center justify-center bg-black/70 px-8 py-4 rounded-2xl border border-gray-600/50 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.6)] w-full max-w-sm" style="text-shadow: 1px 1px 3px black;">
+                <span data-i18n="overlayTotal">Итого:</span> <span id="dice-total-value" class="text-white text-5xl md:text-6xl ml-4 font-bold drop-shadow-md">20</span>
             </div>
-            <div id="dice-status-text" class="font-bold text-5xl md:text-7xl pointer-events-none tracking-widest uppercase opacity-0 cinzel-font" style="text-shadow: 2px 2px 10px black, 0 0 20px currentColor;"></div>
+            <div id="dice-status-text" class="font-bold text-5xl md:text-7xl pointer-events-none tracking-widest uppercase opacity-0 cinzel-font mt-2" style="text-shadow: 2px 2px 10px black, 0 0 20px currentColor;"></div>
         </div>
         
-        <button id="close-overlay-btn" data-i18n="continueBtn" class="hidden mt-8 px-8 py-3 bg-gray-800 border border-gray-600 text-yellow-500 hover:text-white hover:bg-gray-700 hover:border-yellow-400 transition-all duration-300 rounded-xl cinzel-font font-bold text-xl drop-shadow-lg cursor-pointer pointer-events-auto">Продолжить</button>
+        <button id="close-overlay-btn" data-i18n="continueBtn" class="hidden mt-8 md:mt-10 px-8 py-3 bg-gray-800 border border-gray-600 text-yellow-500 hover:text-white hover:bg-gray-700 hover:border-yellow-400 transition-all duration-300 rounded-xl cinzel-font font-bold text-xl drop-shadow-lg cursor-pointer z-30 relative">Продолжить</button>
+    </div>
+
+    <!-- ==========================================
+         HTML КАСТОМНОГО АЛЕРТА
+         ========================================== -->
+    <div id="custom-alert" class="fixed inset-0 z-[110] flex items-center justify-center pointer-events-none hidden bg-black/80 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div id="custom-alert-box" class="bg-gray-900 border-2 border-yellow-600/50 p-6 md:p-8 rounded-2xl shadow-[0_0_30px_rgba(229,181,103,0.2)] flex flex-col items-center max-w-sm mx-4 transform transition-transform duration-300 scale-95 pointer-events-auto">
+            <h3 data-i18n="alertTitle" class="text-2xl md:text-3xl cinzel-font text-yellow-500 mb-3 border-b border-gray-700 pb-2 w-full text-center">Внимание!</h3>
+            <p id="custom-alert-msg" class="text-gray-300 text-center mb-6 cinzel-font tracking-wide text-lg md:text-xl">Максимум 10 кубиков...</p>
+            <button onclick="View.hideAlert()" data-i18n="okBtn" class="px-8 py-2 bg-gray-800 border border-gray-600 text-yellow-500 hover:text-white hover:bg-gray-700 hover:border-yellow-400 transition-all duration-300 rounded-xl cinzel-font font-bold text-lg md:text-xl shadow-lg active:scale-95">Понятно</button>
+        </div>
     </div>
 
     <!-- ==========================================
@@ -318,7 +333,9 @@
                 modShort: "Мод.",
                 success: "УСПЕХ!",
                 fail: "ПРОВАЛ!",
-                continueBtn: "Продолжить"
+                continueBtn: "Продолжить",
+                alertTitle: "Внимание!",
+                okBtn: "Понятно"
             },
             en: {
                 title: "Skill Check",
@@ -346,7 +363,9 @@
                 modShort: "Mod",
                 success: "SUCCESS!",
                 fail: "FAIL!",
-                continueBtn: "Continue"
+                continueBtn: "Continue",
+                alertTitle: "Warning!",
+                okBtn: "Got it"
             }
         };
 
@@ -358,6 +377,36 @@
 
         const View = {
             sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); },
+
+            showAlert(msg) {
+                const overlay = document.getElementById('custom-alert');
+                const box = document.getElementById('custom-alert-box');
+                document.getElementById('custom-alert-msg').innerText = msg;
+
+                overlay.classList.remove('hidden');
+                
+                // Небольшая задержка для запуска CSS-транзишенов
+                setTimeout(() => {
+                    overlay.classList.remove('opacity-0');
+                    overlay.classList.add('pointer-events-auto');
+                    box.classList.remove('scale-95');
+                    box.classList.add('scale-100');
+                }, 10);
+            },
+
+            hideAlert() {
+                const overlay = document.getElementById('custom-alert');
+                const box = document.getElementById('custom-alert-box');
+                
+                overlay.classList.add('opacity-0');
+                overlay.classList.remove('pointer-events-auto');
+                box.classList.remove('scale-100');
+                box.classList.add('scale-95');
+                
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 300);
+            },
 
             getDiceSVG(type, color) {
                 const stroke = "#e5b567";
@@ -445,7 +494,7 @@
                 const tValue = document.getElementById('dice-total-value'); 
                 
                 st.innerText = ''; 
-                st.className = "font-bold text-5xl md:text-7xl pointer-events-none tracking-widest uppercase opacity-0 cinzel-font"; 
+                st.className = "font-bold text-5xl md:text-7xl pointer-events-none tracking-widest uppercase opacity-0 cinzel-font mt-2"; 
                 modsDiv.innerHTML = ''; 
                 tWrap.style.opacity = '0';
                 container.innerHTML = '';
@@ -463,7 +512,8 @@
 
                 diceResults.forEach((die, idx) => {
                     const wrapper = document.createElement('div');
-                    const scaleClass = diceResults.length > 5 ? 'scale-50 md:scale-75' : 'scale-75 md:scale-100';
+                    // ДОБАВЛЕНО: -m-4 (отрицательный отступ) для мобилок, чтобы сжать сетку по высоте
+                    const scaleClass = diceResults.length > 5 ? 'scale-50 md:scale-75 -m-4 md:m-0' : 'scale-75 md:scale-100 -m-2 md:m-0';
                     wrapper.className = `relative transform ${scaleClass} opacity-0`;
                     
                     const svgCont = document.createElement('div');
@@ -642,7 +692,7 @@
 
             addDice(type, colorHex) {
                 if (this.pool.length >= 10) {
-                    alert(t('maxAlert'));
+                    View.showAlert(t('maxAlert'));
                     return;
                 }
                 this.pool.push({ type: type, color: colorHex });
