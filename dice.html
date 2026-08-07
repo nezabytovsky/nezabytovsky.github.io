@@ -164,6 +164,40 @@
             box-shadow: 0 0 10px rgba(229, 181, 103, 0.4);
             transform: scale(1.05);
         }
+
+        /* Кастомный скроллбар для истории */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(229, 181, 103, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(229, 181, 103, 0.6);
+        }
+
+        /* Плавное появление кнопки "Продолжить" */
+        .btn-expand-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.7s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease-in-out;
+            opacity: 0;
+            width: 100%;
+        }
+        .btn-expand-wrapper.expanded {
+            grid-template-rows: 1fr;
+            opacity: 1;
+        }
+        .btn-expand-inner {
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -235,8 +269,8 @@
                     <button onclick="App.addDice(6, '#f97316')" class="btn-dice rounded-lg py-3 cinzel-font font-bold text-orange-400 border-orange-900/50 hover:bg-orange-900/20">d6</button>
                     <button onclick="App.addDice(8, '#84cc16')" class="btn-dice rounded-lg py-3 cinzel-font font-bold text-lime-400 border-lime-900/50 hover:bg-lime-900/20">d8</button>
                     <button onclick="App.addDice(10, '#3b82f6')" class="btn-dice rounded-lg py-3 cinzel-font font-bold text-blue-400 border-blue-900/50 hover:bg-blue-900/20">d10</button>
-                    <button onclick="App.addDice(12, '#a855f7')" class="btn-dice rounded-lg py-3 cinzel-font font-bold text-purple-400 border-purple-900/50 hover:bg-purple-900/20">d12</button>
-                    <button onclick="App.addDice(20, '#eab308')" class="btn-dice rounded-lg py-3 cinzel-font font-bold text-yellow-400 border-yellow-900/50 hover:bg-yellow-900/20">d20</button>
+                    <button onclick="App.addDice(12, '#eab308')" class="btn-dice rounded-lg py-3 cinzel-font font-bold text-yellow-400 border-yellow-900/50 hover:bg-yellow-900/20">d12</button>
+                    <button onclick="App.addDice(20, '#a855f7')" class="btn-dice rounded-lg py-3 cinzel-font font-bold text-purple-400 border-purple-900/50 hover:bg-purple-900/20">d20</button>
                 </div>
             </div>
         </div>
@@ -257,6 +291,18 @@
                     <span data-i18n="rollBtn">Сделать Бросок</span>
                     <span id="roll-formula-hint" class="text-xs font-sans tracking-normal opacity-70 font-normal mt-1">...</span>
                 </button>
+            </div>
+
+            <!-- БЛОК 4: ИСТОРИЯ БРОСКОВ -->
+            <div class="bg-gray-900/40 p-5 rounded-xl border border-gray-800 flex flex-col max-h-[250px] md:max-h-[300px]">
+                <div class="flex justify-between items-center border-b border-gray-700 pb-2 mb-4">
+                    <h2 data-i18n="historyTitle" class="text-xl cinzel-font text-yellow-600">4. История бросков</h2>
+                    <button data-i18n="clearHistory" onclick="App.clearHistoryLogs()" class="text-xs md:text-sm text-red-400 hover:text-red-300 underline font-sans tracking-wider">Очистить</button>
+                </div>
+                
+                <div id="history-container" class="flex flex-col gap-2 overflow-y-auto pr-1 flex-grow">
+                    <p id="empty-history-text" data-i18n="emptyHistory" class="text-gray-500 italic text-center w-full mt-4">История пуста...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -287,7 +333,11 @@
             <div id="dice-status-text" class="font-bold text-5xl md:text-7xl pointer-events-none tracking-widest uppercase opacity-0 cinzel-font mt-2" style="text-shadow: 2px 2px 10px black, 0 0 20px currentColor;"></div>
         </div>
         
-        <button id="close-overlay-btn" data-i18n="continueBtn" class="hidden mt-8 md:mt-10 px-8 py-3 bg-gray-800 border border-gray-600 text-yellow-500 hover:text-white hover:bg-gray-700 hover:border-yellow-400 transition-all duration-300 rounded-xl cinzel-font font-bold text-xl drop-shadow-lg cursor-pointer z-30 relative">Продолжить</button>
+        <div id="close-overlay-wrapper" class="btn-expand-wrapper mt-4 z-30 relative pointer-events-auto">
+            <div class="btn-expand-inner">
+                <button id="close-overlay-btn" data-i18n="continueBtn" class="mt-4 mb-2 px-8 py-3 bg-gray-800 border border-gray-600 text-yellow-500 hover:text-white hover:bg-gray-700 hover:border-yellow-400 transition-all duration-300 rounded-xl cinzel-font font-bold text-xl drop-shadow-lg cursor-pointer">Продолжить</button>
+            </div>
+        </div>
     </div>
 
     <!-- ==========================================
@@ -335,7 +385,10 @@
                 fail: "ПРОВАЛ!",
                 continueBtn: "Продолжить",
                 alertTitle: "Внимание!",
-                okBtn: "Понятно"
+                okBtn: "Понятно",
+                historyTitle: "4. История бросков",
+                clearHistory: "Очистить",
+                emptyHistory: "История пуста..."
             },
             en: {
                 title: "Skill Check",
@@ -365,7 +418,10 @@
                 fail: "FAIL!",
                 continueBtn: "Continue",
                 alertTitle: "Warning!",
-                okBtn: "Got it"
+                okBtn: "Got it",
+                historyTitle: "4. Roll History",
+                clearHistory: "Clear",
+                emptyHistory: "History is empty..."
             }
         };
 
@@ -454,16 +510,15 @@
                                 </svg>`;
                     case 12:
                         return `<svg width="150" height="150" viewBox="0 0 100 100">
-                                    <polygon points="50,2 95,28 95,72 50,98 5,72 5,28" fill="${color}"/>
+                                    <polygon points="50,2 75,8 95,30 98,60 80,90 50,98 20,90 2,60 5,30 25,8" fill="${color}"/>
                                     <g stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round">
-                                        <polygon points="50,2 95,28 95,72 50,98 5,72 5,28" fill="transparent"/>
-                                        <polygon points="50,22 76,40 66,70 34,70 24,40" fill="rgba(255,255,255,0.05)"/>
-                                        <polygon points="50,2 95,28 76,40 50,22" fill="rgba(255,255,255,0.15)"/>
-                                        <polygon points="50,2 5,28 24,40 50,22" fill="rgba(255,255,255,0.25)"/>
-                                        <polygon points="95,28 95,72 66,70 76,40" fill="rgba(0,0,0,0.1)"/>
-                                        <polygon points="5,28 5,72 34,70 24,40" fill="rgba(0,0,0,0.3)"/>
-                                        <polygon points="50,98 95,72 66,70 34,70" fill="rgba(0,0,0,0.2)"/>
-                                        <polygon points="50,98 5,72 34,70" fill="rgba(0,0,0,0.4)"/>
+                                        <polygon points="50,2 75,8 95,30 98,60 80,90 50,98 20,90 2,60 5,30 25,8" fill="transparent"/>
+                                        <polygon points="50,25 75,45 65,75 35,75 25,45" fill="rgba(255,255,255,0.1)"/>
+                                        <polygon points="50,25 50,2 75,8 95,30 75,45" fill="rgba(255,255,255,0.2)"/>
+                                        <polygon points="75,45 95,30 98,60 80,90 65,75" fill="rgba(0,0,0,0.05)"/>
+                                        <polygon points="65,75 80,90 50,98 20,90 35,75" fill="rgba(0,0,0,0.3)"/>
+                                        <polygon points="35,75 20,90 2,60 5,30 25,45" fill="rgba(0,0,0,0.2)"/>
+                                        <polygon points="25,45 5,30 25,8 50,2 50,25" fill="rgba(255,255,255,0.05)"/>
                                     </g>
                                 </svg>`;
                     default: 
@@ -597,20 +652,16 @@
 
                 await this.sleep(1500);
                 
-                const closeBtn = document.getElementById('close-overlay-btn');
-                closeBtn.classList.remove('hidden');
-                closeBtn.style.opacity = '0';
-                
-                await this.sleep(50);
-                closeBtn.style.opacity = '1';
+                const closeWrap = document.getElementById('close-overlay-wrapper');
+                closeWrap.classList.add('expanded');
 
                 return new Promise(resolve => {
+                    const closeBtn = document.getElementById('close-overlay-btn');
                     closeBtn.onclick = async () => {
-                        closeBtn.style.opacity = '0';
+                        closeWrap.classList.remove('expanded');
                         overlay.classList.add('opacity-0'); 
                         await this.sleep(300);
                         overlay.classList.add('hidden'); 
-                        closeBtn.classList.add('hidden');
                         resolve();
                     };
                 });
@@ -619,6 +670,8 @@
 
         const App = {
             pool: [],
+            history: [],
+            currentFormula: "",
             isRolling: false,
             isCheckMode: false,
             rollMode: 'normal', 
@@ -640,6 +693,7 @@
                         el.innerText = i18n[currentLang][key];
                     }
                 });
+                this.renderHistory(); // Обновляем историю при смене языка
             },
 
             setRollMode(mode) {
@@ -753,12 +807,58 @@
                 if (this.rollMode === 'adv') { prefix = t('maxOf'); suffix = ")"; }
                 else if (this.rollMode === 'dis') { prefix = t('minOf'); suffix = ")"; }
 
-                hint.innerText = `${t('formula')}${prefix}${formulaParts.join(' + ')}${suffix}${modStr}`;
+                this.currentFormula = `${prefix}${formulaParts.join(' + ')}${suffix}${modStr}`;
+                hint.innerText = `${t('formula')}${this.currentFormula}`;
             },
 
             removeDice(index) {
                 this.pool.splice(index, 1);
                 this.renderPool();
+            },
+
+            clearHistoryLogs() {
+                this.history = [];
+                this.renderHistory();
+            },
+
+            renderHistory() {
+                const container = document.getElementById('history-container');
+                const emptyText = document.getElementById('empty-history-text');
+                
+                Array.from(container.children).forEach(child => {
+                    if (child.id !== 'empty-history-text') child.remove();
+                });
+
+                if (this.history.length === 0) {
+                    emptyText.style.display = 'block';
+                    return;
+                }
+
+                emptyText.style.display = 'none';
+
+                this.history.forEach((entry, idx) => {
+                    const item = document.createElement('div');
+                    item.className = "flex justify-between items-center bg-black/30 p-3 rounded border border-gray-700/50 text-sm md:text-base animate-[popInMod_0.3s_ease-out_forwards] shrink-0";
+                    item.style.animationDelay = `${idx * 30}ms`;
+
+                    let targetStr = "";
+                    let valColor = "text-yellow-400"; // Нейтральный по умолчанию
+
+                    if (entry.target !== null) {
+                        targetStr = `<span class="text-xs md:text-sm ml-2 text-gray-500 font-sans tracking-wide">(DC ${entry.target})</span>`;
+                        valColor = entry.isSuccess ? "text-green-400 drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]" : "text-red-500 drop-shadow-[0_0_5px_rgba(239,68,68,0.5)]";
+                    }
+
+                    item.innerHTML = `
+                        <div class="text-gray-300 cinzel-font font-bold">
+                            ${entry.formula} ${targetStr}
+                        </div>
+                        <div class="font-bold cinzel-font text-xl md:text-2xl ${valColor}">
+                            ${entry.total}
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
             },
 
             async roll() {
@@ -818,6 +918,19 @@
 
                 await View.runAnimation(diceResults, modifier, total, targetDc, isSuccess, dropIndices);
 
+                // Добавляем результат в историю после закрытия экрана анимации
+                this.history.unshift({
+                    formula: this.currentFormula,
+                    total: total,
+                    target: targetDc,
+                    isSuccess: isSuccess
+                });
+                
+                if (this.history.length > 10) {
+                    this.history.pop();
+                }
+                this.renderHistory();
+
                 this.isRolling = false;
                 document.getElementById('btn-roll').disabled = false;
             }
@@ -827,6 +940,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             App.updateUITexts();
             App.renderPool();
+            App.renderHistory();
         });
 
         document.getElementById('input-mod').addEventListener('input', () => App.renderPool());
