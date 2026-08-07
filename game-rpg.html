@@ -507,7 +507,7 @@
                         <li><strong class="text-red-400">Агрессивно:</strong> +2 к Урону, но -2 к вашей Защите (КД). Полезно для добивания или если враг ушел в оборону (тогда вы бьете с <i>Преимуществом</i>).</li>
                         <li><strong class="text-blue-400">Осторожно:</strong> -2 к Меткости, но +2 к Защите. Если враг бьет силовой атакой, он промахнется и получит <i>Оглушение</i>.</li>
                         <li><strong class="text-purple-400">Хитрый трюк:</strong> Проверка навыка. При успехе враг отвлечен и бьет с <i>Помехой</i>.</li>
-                        <li><strong class="text-emerald-400">Окружение:</strong> Особое действие (например, скинуть сталактит). Требует броска характеристики, наносит урон и накладывает статусы.</li>
+                        <li><strong class="text-emerald-400">Окружение:</strong> Особое действие (например, скинуть сталактит). Требует броска характеристики и накладывает на врага разрушительные статусы (Горение, Кровотечение, Оглушение) — урон они наносят уже со следующего раунда.</li>
                         <li><strong class="text-teal-400">Быстрый пояс:</strong> Использование боевых зелий или ядов прямо во время своего хода.</li>
                         <li><strong class="text-fuchsia-400">Классовый навык (1 💎):</strong> Особое быстрое действие, уникальное для вашего класса. Тратит Осколки, но может перевернуть ход боя!</li>
                     </ul>
@@ -758,7 +758,7 @@
         const ITEMS_REGISTRY = {
             "w_axe": { name: "Двуручный Топор", type: "weapon", stat: "str", diceCount: 1, diceSides: 8, bonusAtk: 0, bonusDmg: 0, slot: "mainHand", desc: "Урон: 1d8 Сила" },
             "w_staff": { name: "Посох", type: "weapon", stat: "int", diceCount: 1, diceSides: 4, bonusAtk: 0, bonusDmg: 0, slot: "mainHand", desc: "Урон: 1d4 Интеллект" },
-            "w_daggers": { name: "Кинжалы", type: "weapon", stat: "dex", diceCount: 2, diceSides: 4, bonusAtk: 0, bonusDmg: 0, slot: "mainHand", desc: "Урон: 2d4 Ловкость" },
+            "w_daggers": { name: "Кинжалы", type: "weapon", stat: "dex", diceCount: 1, diceSides: 4, bonusAtk: 0, bonusDmg: 0, slot: "mainHand", desc: "Урон: 1d4 Ловкость" },
             "w_orc_sword": { name: "Ржавый меч орка", type: "weapon", stat: "str", diceCount: 1, diceSides: 6, bonusAtk: 0, bonusDmg: 1, slot: "mainHand", desc: "Урон: 1d6+1 Сила. Тяжелый и тупой." },
             "w_elf_bow": { name: "Эльфийский лук", type: "weapon", stat: "dex", diceCount: 1, diceSides: 8, bonusAtk: 1, bonusDmg: 0, slot: "mainHand", desc: "Урон: 1d8 Ловкость. Точный (+1 Меткость)." },
             "a_leather": { name: "Кожаный доспех", type: "armor", slot: "body", acBonus: 2, desc: "+2 к Защите (КД)" },
@@ -773,7 +773,7 @@
             "scroll_stone_skin": { name: "Свиток: Каменная кожа", type: "scroll", spellId: "stone_skin", desc: "Обучает магии защиты", actions: [{ type: "LEARN_SPELL", spellId: "stone_skin" }] },
             "scroll_blindness": { name: "Свиток: Слепота", type: "scroll", spellId: "blindness", desc: "Обучает заклинанию ослепления", actions: [{ type: "LEARN_SPELL", spellId: "blindness" }] },
             "acid_flask": { name: "Кислотная фляга", type: "combat_item", desc: "Снижает КД врага на 2", actions: [{ type: "COMBAT_DEBUFF_ARMOR", amount: 2 }] },
-            "blind_powder": { name: "Ослепляющий порошок", type: "combat_item", desc: "Помеха врагу в след. ход", actions: [{ type: "COMBAT_SET_ENEMY_FLAG", flag: "disadvantage", value: true }] },
+            "blind_powder": { name: "Ослепляющий порошок", type: "combat_item", desc: "Помеха врагу в след. ход", actions: [{ type: "COMBAT_APPLY_DEBUFF", debuff: "blindness", duration: 1 }] },
             "torch": { name: "Факел", type: "quest", desc: "Освещает путь" },
             "lockpicks": { name: "Отмычки", type: "quest", desc: "Для взлома замков" },
             "magic_crystal": { name: "Магический кристалл", type: "quest", desc: "Светится в темноте" },
@@ -903,7 +903,7 @@
                 choices: [
                     { textTemplate: "Воин (Много Здоровья, Двуручный Топор 1d8, Сила)", actions: [{ type: "APPLY_CLASS", classId: "warrior" }], nextId: "entrance" },
                     { textTemplate: "Маг (Много Маны, Посох 1d4, Интеллект)", actions: [{ type: "APPLY_CLASS", classId: "mage" }], nextId: "entrance" },
-                    { textTemplate: "Плут (Баланс, Кинжалы 2d4, Ловкость)", actions: [{ type: "APPLY_CLASS", classId: "rogue" }], nextId: "entrance" }
+                    { textTemplate: "Плут (Баланс, Кинжалы 1d4, Ловкость)", actions: [{ type: "APPLY_CLASS", classId: "rogue" }], nextId: "entrance" }
                 ]
             },
             "entrance": {
@@ -2316,11 +2316,11 @@
                     weaponStat = "Силы";
                 } else if (a.classId === 'mage') {
                     charClassAcc = "Магом";
-                    gearDesc = "<b>Посох</b> (Урон: 1d4). Вы также знаете заклинания «Огненный снаряд» и «Каменная кожа». В рюкзаке: зелья маны и фляга.";
+                    gearDesc = "<b>Посох</b> (Урон: 1d4). Пока вы не знаете заклинаний — но древние свитки впереди обучат вас магии! В рюкзаке: Магический кристалл, зелья маны и фляга.";
                     weaponStat = "Интеллекта";
                 } else if (a.classId === 'rogue') {
                     charClassAcc = "Плутом";
-                    gearDesc = "<b>Кинжалы</b> (Урон: 2d4) и <b>Кожаный доспех</b> (+2 к Защите). В рюкзаке: Отмычки, Факел и Ослепляющий порошок.";
+                    gearDesc = "<b>Кинжалы</b> (Урон: 1d4) и <b>Кожаный доспех</b> (+2 к Защите). В рюкзаке: Отмычки, Факел и Ослепляющий порошок.";
                     weaponStat = "Ловкости";
                 }
 
