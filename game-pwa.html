@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Лабиринт Дракона">
+    <meta name="theme-color" content="#0f0f11">
+
+    <title>Побег из Лабиринта Дракона</title>
+
+    <!-- PWA-обвязка (манифест и иконки) живёт ТОЛЬКО здесь и в отдельных
+         файлах manifest.webmanifest / sw.js. Сам файл игры (game-rpg.html)
+         можно целиком перезаписывать при копировании из другой папки —
+         PWA от этого не пострадает. -->
+    <link rel="manifest" href="/assets/manifest-DnLNUvV7.webmanifest">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192-DsKzpa3W.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon-BdwIsRaU.png">
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f0f11;
+            overflow: hidden;
+        }
+        #game-frame {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            border: 0;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Игра полностью живёт в game-rpg.html; здесь только PWA-оболочка -->
+    <iframe id="game-frame"
+            src="game-rpg.html"
+            title="Побег из Лабиринта Дракона"
+            allow="fullscreen"
+            allowfullscreen></iframe>
+
+    <!-- Регистрация Service Worker (PWA: установка и офлайн-работа) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch((err) => {
+                    console.warn('Service Worker не зарегистрирован:', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
