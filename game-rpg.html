@@ -17,6 +17,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <title>Побег из Лабиринта Дракона</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            future: {
+                // Эта настройка запрещает Tailwind-ховерам срабатывать на тач-экранах
+                hoverOnlyWhenSupported: true,
+            }
+        }
+    </script>
     <style>
         :root {
             --bg-color: #0f0f11;
@@ -25,6 +33,11 @@
             --text-title: #e5b567;
             --accent: #3b301a;
             --accent-hover: #524222;
+        }
+
+        /* Отключаем «моргание» при тапе на мобильных (tap highlight) */
+        * {
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -95,12 +108,23 @@
             overflow: hidden;
         }
 
-        .choice-btn:hover:not(:disabled) {
+        /* Ховер сработает только на ПК (где есть мышь) */
+        @media (hover: hover) {
+            .choice-btn:hover:not(:disabled) {
+                background-color: var(--accent);
+                border-color: var(--text-title);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(229, 181, 103, 0.3);
+                cursor: pointer;
+            }
+        }
+
+        /* А этот эффект сработает в момент тапа пальцем на телефоне (кнопка слегка вдавливается) */
+        .choice-btn:active:not(:disabled) {
+            transform: translateY(1px);
             background-color: var(--accent);
             border-color: var(--text-title);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(229, 181, 103, 0.3);
-            cursor: pointer;
+            box-shadow: none;
         }
 
         .choice-btn:disabled {
@@ -215,7 +239,8 @@
         .combat-top-shrink { height: 50% !important; }
 
         #notification-container {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            /* Меняем top: 20px на динамический отступ с учётом безопасной зоны */
+            position: fixed; top: max(20px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
             z-index: 300; pointer-events: none; display: flex; flex-direction: column;
             gap: 10px; width: 90%; max-width: 400px;
         }
@@ -257,19 +282,38 @@
         .game-container {
             min-height: 100vh;
             min-height: 100dvh;
-            /* Увеличиваем базовый отступ до 100px + системная полоса iOS */
-            padding-bottom: calc(100px + env(safe-area-inset-bottom));
+            /* Убрали padding-bottom отсюда, так как при скролле браузеры его игнорируют */
         }
 
         .story-panel {
-            min-height: calc(100vh - 100px);
-            min-height: calc(100dvh - 100px);
+            min-height: 100vh;
+            min-height: 100dvh;
+            /* Панель растёт с контентом (перекрывает базовый flex:1), чтобы
+               padding-bottom оказался ПОСЛЕ кнопок, а не внутри бокса */
+            flex: 0 0 auto;
+            /* Переносим отступ прямо в скроллируемый контент (высота меню + запас) */
+            padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
+            /* Меняем логику флексбокса, чтобы длинные кнопки не обрезались */
+            justify-content: flex-start !important;
         }
 
-        /* Сбрасываем отступы на десктопе */
+        /* Безопасное вертикальное центрирование контента */
+        .story-panel > div {
+            margin-top: auto;
+            margin-bottom: auto;
+            width: 100%;
+        }
+
+        /* Возвращаем стандартное поведение на ПК */
         @media (min-width: 768px) {
-            .game-container { padding-bottom: 0; }
-            .story-panel { min-height: 100vh; min-height: 100dvh; }
+            .story-panel { 
+                padding-bottom: 2.5rem !important; /* эквивалент отступа md:p-10 */
+                justify-content: center !important;
+            }
+            .story-panel > div {
+                margin-top: 0;
+                margin-bottom: 0;
+            }
         }
 
         .mobile-bottom-menu {
@@ -314,7 +358,7 @@
 
     <div id="notification-container"></div>
 
-    <button onclick="View.toggleFullScreen()" class="fixed top-3 right-3 w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-full bg-[#1a1a24]/80 border border-gray-600 text-gray-300 hover:text-white hover:border-yellow-500 transition-all z-[80] cursor-pointer shadow-lg active:scale-90 backdrop-blur-sm" title="На весь экран">
+    <button onclick="View.toggleFullScreen()" class="fixed top-[max(12px,env(safe-area-inset-top))] right-[max(12px,env(safe-area-inset-right))] w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-full bg-[#1a1a24]/80 border border-gray-600 text-gray-300 hover:text-white hover:border-yellow-500 transition-all z-[80] cursor-pointer shadow-lg active:scale-90 backdrop-blur-sm" title="На весь экран">
         ⤢
     </button>
 
@@ -435,7 +479,7 @@
 
     <!-- Модальное окно правил -->
     <div id="rules-modal" class="fixed inset-0 z-[200] flex items-center justify-center hidden bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300">
-        <div class="bg-[#1a1a24] border-2 border-[#e5b567] rounded-xl p-6 max-w-2xl w-full mx-4 shadow-2xl relative text-gray-300 flex flex-col max-h-[90vh]">
+        <div class="bg-[#1a1a24] border-2 border-[#e5b567] rounded-xl p-6 max-w-2xl w-full mx-4 shadow-2xl relative text-gray-300 flex flex-col max-h-[90dvh]">
             <button onclick="View.toggleRules()" class="absolute top-3 right-4 text-3xl text-gray-500 hover:text-red-400 transition-colors z-10">&times;</button>
             
             <h2 class="text-2xl text-[#e5b567] mb-4 font-bold text-center shrink-0" style="font-family: 'Cinzel', serif;">Свод Правил</h2>
@@ -539,7 +583,7 @@
     </div>
 
     <div id="tutorial-modal" class="fixed inset-0 z-[300] flex items-center justify-center hidden bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300">
-        <div class="bg-[#1a1a24] border-2 border-blue-500 rounded-xl p-6 max-w-lg w-full mx-4 shadow-[0_0_30px_rgba(59,130,246,0.3)] relative text-gray-300 flex flex-col max-h-[90vh]">
+        <div class="bg-[#1a1a24] border-2 border-blue-500 rounded-xl p-6 max-w-lg w-full mx-4 shadow-[0_0_30px_rgba(59,130,246,0.3)] relative text-gray-300 flex flex-col max-h-[90dvh]">
             <button onclick="View.closeTutorialModal()" class="absolute top-3 right-4 text-3xl text-gray-500 hover:text-blue-400 transition-colors z-10">&times;</button>
             
             <h2 id="tutorial-title" class="text-2xl text-blue-400 mb-4 font-bold text-center shrink-0" style="font-family: 'Cinzel', serif;">Обучение</h2>
@@ -557,7 +601,7 @@
         
         <div id="hero-backdrop" onclick="View.closeHeroSheet()" class="hidden fixed inset-0 z-[94] bg-black/60 backdrop-blur-sm"></div>
         
-        <div id="hero-screen" class="hero-mobile-sheet hidden md:flex flex-col hud-panel fixed inset-x-0 bottom-0 md:inset-auto md:top-6 md:right-6 w-full md:w-[340px] max-h-[85vh] md:max-h-[calc(100vh-48px)] overflow-hidden z-[95] md:z-40">
+        <div id="hero-screen" class="hero-mobile-sheet hidden md:flex flex-col hud-panel fixed inset-x-0 bottom-0 md:inset-auto md:top-6 md:right-6 w-full md:w-[340px] max-h-[85dvh] md:max-h-[calc(100dvh-48px)] overflow-hidden z-[95] md:z-40">
             
             <div class="flex-none">
                 <div class="relative flex items-center justify-center px-4 md:px-6 pt-3 md:pt-5 pb-2">
@@ -677,13 +721,13 @@
 
                 <div class="w-2/5 flex items-center justify-between gap-1 min-w-0 pl-1">
                     
-                    <div class="flex flex-col justify-center text-[13px] leading-tight text-gray-400 shrink-0">
+                    <div class="flex flex-col justify-center text-[13px] leading-tight text-gray-400 shrink-0 whitespace-nowrap">
                         <div title="Защита (КД)">🛡️ <span id="mini-ac-val" class="text-white font-bold">10</span></div>
                         <div title="Меткость">🎯 <span id="mini-atk-val" class="text-green-300 font-bold">+0</span></div>
                         <div title="Урон">⚔️ <span id="mini-dmg-val" class="text-red-300 font-bold">1d4</span></div>
                     </div>
 
-                    <div class="flex flex-col justify-center items-end text-[13px] leading-tight shrink-0">
+                    <div class="flex flex-col justify-center items-end text-[13px] leading-tight shrink-0 whitespace-nowrap">
                         <div class="text-green-400 font-bold">🌟 <span id="mini-lvl-val">1</span></div>
                         <div class="text-fuchsia-400 font-bold">💎 <span id="mini-shards-val">0</span></div>
                     </div>
@@ -1300,23 +1344,33 @@
             // Включение и выключение полноэкранного режима (ПК и Мобилка)
             toggleFullScreen() {
                 const docElm = document.documentElement;
+
+                // Проверяем, поддерживает ли браузер вообще полноэкранный режим
+                const isFullscreenSupported = !!(docElm.requestFullscreen || docElm.webkitRequestFullscreen || docElm.msRequestFullscreen);
+
+                if (!isFullscreenSupported) {
+                    // Если это iPhone/iOS, где API заблокирован
+                    this.showNotification("На мобильных устройствах добавьте игру на экран «Домой» для игры на весь экран 📲");
+                    return;
+                }
+
                 const isFull = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
 
                 if (!isFull) {
                     if (docElm.requestFullscreen) {
-                        docElm.requestFullscreen();
-                    } else if (docElm.webkitRequestFullscreen) { /* Safari */
+                        docElm.requestFullscreen().catch(() => {});
+                    } else if (docElm.webkitRequestFullscreen) {
                         docElm.webkitRequestFullscreen();
-                    } else if (docElm.msRequestFullscreen) { /* IE/Edge */
+                    } else if (docElm.msRequestFullscreen) {
                         docElm.msRequestFullscreen();
                     }
                     this.showNotification("Полноэкранный режим включен");
                 } else {
                     if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) { /* Safari */
+                        document.exitFullscreen().catch(() => {});
+                    } else if (document.webkitExitFullscreen) {
                         document.webkitExitFullscreen();
-                    } else if (document.msExitFullscreen) { /* IE/Edge */
+                    } else if (document.msExitFullscreen) {
                         document.msExitFullscreen();
                     }
                 }
@@ -2127,6 +2181,10 @@
                     return isHit; 
                 } else {
                     tH.classList.add('combat-top-shrink'); bH.classList.add('combat-expand'); div.classList.remove('opacity-0'); div.classList.add('opacity-100');
+                    
+                    // ✨ Ждем завершения анимации раскрытия панели перед броском (анти-фриз на iPhone)
+                    await this.sleep(400);
+                    
                     dSvg.innerHTML = this.getDiceSVG(cfg.dmgDice, cfg.dmgColor || "#b22222"); dV.style.transform = (cfg.dmgDice === 4) ? 'translateY(8px)' : 'none';
                     let dInt = setInterval(() => { if (dV) dV.innerText = Math.floor(Math.random() * cfg.dmgDice) + 1; }, 50);
                     dW.classList.add('dice-roll-anim');
@@ -2176,6 +2234,10 @@
 
                 await this.sleep(500);
                 eH.classList.remove('h-0', 'opacity-0'); eH.classList.add('h-1/2', 'opacity-100');
+                
+                // ✨ Ждем, пока панель врага плавно выедет, чтобы не перегружать iPhone
+                await this.sleep(400); 
+                
                 let eInt = setInterval(() => { if (eV) eV.innerText = Math.floor(Math.random() * 20) + 1; }, 50); eW.classList.add('dice-roll-anim');
                 
                 try { await this.sleep(600); } finally { clearInterval(eInt); }
