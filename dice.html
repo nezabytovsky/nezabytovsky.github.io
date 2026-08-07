@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Приложение: Бросок Кубиков</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0f0f11;
+            --text-main: #d3c4a9;
+            --text-title: #e5b567;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Cormorant Garamond', serif;
+            background-image: radial-gradient(circle at center, #1a1a24 0%, #0f0f11 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .cinzel-font {
+            font-family: 'Cinzel', serif !important;
+        }
+
+        /* Анимации кубиков */
+        .dice-roll-anim { animation: diceTumble 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        @keyframes diceTumble {
+            0% { transform: translateY(-200px) rotate(0deg) scale(0.5); opacity: 0; }
+            50% { transform: translateY(20px) rotate(360deg) scale(1.2); opacity: 1; }
+            100% { transform: translateY(0) rotate(720deg) scale(1); opacity: 1; }
+        }
+        
+        .pulse-neutral { animation: pulseNeutral 0.6s ease-out forwards; }
+        @keyframes pulseNeutral {
+            0% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(229, 181, 103, 0)); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 15px rgba(229, 181, 103, 0.6)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(229, 181, 103, 0.3)); }
+        }
+
+        .pulse-success { animation: pulseSuccess 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes pulseSuccess {
+            0% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(74, 222, 128, 0)) brightness(1); }
+            30% { transform: scale(1.2); filter: drop-shadow(0 0 30px rgba(74, 222, 128, 0.9)) brightness(1.3); }
+            100% { transform: scale(1.05); filter: drop-shadow(0 0 15px rgba(74, 222, 128, 0.5)) brightness(1); }
+        }
+
+        .pulse-fail { animation: pulseFail 0.7s ease-in-out forwards; }
+        @keyframes pulseFail {
+            0% { transform: scale(1) translateX(0); filter: drop-shadow(0 0 0px rgba(239, 68, 68, 0)) grayscale(0%);}
+            20% { transform: scale(1.1) translateX(-10px) rotate(-5deg); filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.8)) grayscale(30%);}
+            40% { transform: scale(1.1) translateX(10px) rotate(5deg); filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.6)) grayscale(60%);}
+            60% { transform: scale(1.1) translateX(-5px) rotate(-3deg); filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.5)) grayscale(80%);}
+            100% { transform: scale(1) translateX(0) rotate(0deg); filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.5)) grayscale(80%); opacity: 0.9;}
+        }
+
+        /* Элементы интерфейса */
+        .status-float { animation: statusFloatAnim 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        @keyframes statusFloatAnim {
+            0% { transform: translateY(10px) scale(0.8); opacity: 0; }
+            20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
+            80% { transform: translateY(-20px) scale(1); opacity: 1; }
+            100% { transform: translateY(-30px) scale(0.9); opacity: 1; }
+        }
+
+        .mod-pop { animation: popInMod 0.3s ease-out forwards; }
+        @keyframes popInMod {
+            0% { transform: translateY(15px) scale(0.9); opacity: 0; }
+            60% { transform: translateY(-3px) scale(1.05); opacity: 1; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        /* Стили инпутов и кнопок */
+        .fantasy-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #4a4a5c;
+            color: #e5b567;
+            text-align: center;
+            font-size: 1.5rem;
+            border-radius: 0.5rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .fantasy-input:focus {
+            border-color: #e5b567;
+            box-shadow: 0 0 10px rgba(229, 181, 103, 0.2);
+        }
+
+        .fantasy-input::-webkit-outer-spin-button,
+        .fantasy-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .fantasy-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .btn-dice {
+            background-color: #2a2a35;
+            border: 1px solid #4a4a5c;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .btn-dice:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .btn-dice:active { transform: translateY(1px); }
+        
+        .btn-action {
+            background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+            border: 2px solid #f87171;
+            color: white;
+            text-shadow: 1px 1px 2px black;
+            transition: all 0.3s;
+        }
+        .btn-action:hover:not(:disabled) {
+            background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+            transform: scale(1.02);
+        }
+        .btn-action:disabled {
+            filter: grayscale(100%);
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Тоггл переключатель (свитч) */
+        input:checked ~ .toggle-bg {
+            background-color: #3f6212;
+            border-color: #65a30d;
+        }
+        input:checked ~ .toggle-dot {
+            transform: translateX(100%);
+            background-color: #bef264;
+        }
+
+        /* Контейнер пула */
+        .pool-item {
+            animation: popInMod 0.2s ease-out forwards;
+        }
+        
+        /* Кнопка смены языка */
+        .lang-btn {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #e5b567;
+            color: #e5b567;
+            transition: all 0.3s ease;
+        }
+        .lang-btn:hover {
+            background: rgba(229, 181, 103, 0.2);
+            box-shadow: 0 0 10px rgba(229, 181, 103, 0.4);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Кнопка переключения языка -->
+    <button id="lang-toggle-btn" onclick="App.toggleLanguage()" class="lang-btn fixed top-4 right-4 md:top-8 md:right-8 z-[100] px-3 py-1 md:px-4 md:py-2 rounded-lg cinzel-font font-bold text-sm md:text-lg backdrop-blur-sm cursor-pointer tracking-widest">
+        RU
+    </button>
+
+    <!-- ==========================================
+         ИНТЕРФЕЙС ПРИЛОЖЕНИЯ
+         ========================================== -->
+    <div class="z-10 w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 p-6 md:p-10 bg-black/50 rounded-2xl border border-gray-700 shadow-2xl backdrop-blur-sm relative mt-10 md:mt-0">
+        
+        <div class="col-span-1 md:col-span-2 text-center border-b border-gray-700/50 pb-4 mb-2">
+            <h1 data-i18n="title" class="text-3xl md:text-5xl font-bold cinzel-font text-yellow-500 drop-shadow-lg">Проверка Навыка</h1>
+            <p data-i18n="subtitle" class="text-gray-400 mt-2 text-sm md:text-lg">Собери свой пул кубиков, введи параметры и бросай!</p>
+        </div>
+
+        <!-- ЛЕВАЯ КОЛОНКА: Настройки -->
+        <div class="flex flex-col gap-6">
+            <div class="bg-gray-900/40 p-5 rounded-xl border border-gray-800">
+                <div class="flex justify-between items-center border-b border-gray-700 pb-2 mb-4">
+                    <h2 data-i18n="paramTitle" class="text-xl cinzel-font text-yellow-600">1. Параметры броска</h2>
+                    <label class="flex items-center cursor-pointer group" title="Toggle DC check">
+                        <span data-i18n="withTarget" class="mr-3 text-xs md:text-sm text-gray-400 cinzel-font tracking-widest group-hover:text-gray-200 transition-colors">С ЦЕЛЬЮ</span>
+                        <div class="relative">
+                            <input type="checkbox" id="mode-toggle" class="sr-only" onchange="App.toggleMode()">
+                            <div class="toggle-bg block bg-gray-700 w-10 h-6 rounded-full border border-gray-600 transition-colors duration-300"></div>
+                            <div class="toggle-dot absolute left-1 top-1 bg-gray-400 w-4 h-4 rounded-full transition-transform duration-300"></div>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="flex flex-row justify-between gap-4">
+                    <div id="dc-container" class="flex flex-col w-1/2 transition-all duration-300 opacity-30 grayscale pointer-events-none">
+                        <label data-i18n="targetDc" class="text-xs md:text-sm text-gray-400 mb-1 cinzel-font tracking-wider text-center">Цель (Сложность)</label>
+                        <div class="flex items-center gap-2">
+                            <button onclick="App.changeValue('input-dc', -1)" class="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 flex items-center justify-center bg-gray-800/80 border border-gray-600 rounded-lg text-yellow-500 hover:bg-gray-700 hover:border-yellow-500 hover:text-white transition-all cinzel-font text-xl font-bold shadow-md active:transform active:scale-95">-</button>
+                            <input type="number" id="input-dc" value="13" class="fantasy-input cinzel-font w-full py-2 font-bold flex-grow min-w-0 text-lg md:text-xl" min="1" max="100">
+                            <button onclick="App.changeValue('input-dc', 1)" class="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 flex items-center justify-center bg-gray-800/80 border border-gray-600 rounded-lg text-yellow-500 hover:bg-gray-700 hover:border-yellow-500 hover:text-white transition-all cinzel-font text-xl font-bold shadow-md active:transform active:scale-95">+</button>
+                        </div>
+                    </div>
+                    <div class="flex flex-col w-1/2">
+                        <label data-i18n="modifier" class="text-xs md:text-sm text-gray-400 mb-1 cinzel-font tracking-wider text-center">Модификатор (+/-)</label>
+                        <div class="flex items-center gap-2">
+                            <button onclick="App.changeValue('input-mod', -1)" class="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 flex items-center justify-center bg-gray-800/80 border border-gray-600 rounded-lg text-yellow-500 hover:bg-gray-700 hover:border-yellow-500 hover:text-white transition-all cinzel-font text-xl font-bold shadow-md active:transform active:scale-95">-</button>
+                            <input type="number" id="input-mod" value="0" class="fantasy-input cinzel-font w-full py-2 font-bold flex-grow min-w-0 text-lg md:text-xl">
+                            <button onclick="App.changeValue('input-mod', 1)" class="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 flex items-center justify-center bg-gray-800/80 border border-gray-600 rounded-lg text-yellow-500 hover:bg-gray-700 hover:border-yellow-500 hover:text-white transition-all cinzel-font text-xl font-bold shadow-md active:transform active:scale-95">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 border-t border-gray-700/50 pt-4">
+                    <label data-i18n="specialCond" class="block text-sm text-gray-400 mb-3 cinzel-font tracking-wider text-center">Особые условия</label>
+                    <div class="flex justify-center gap-2 md:gap-4">
+                        <button id="btn-mode-normal" data-i18n="modeNormal" onclick="App.setRollMode('normal')" class="flex-1 px-1 md:px-2 py-2 rounded-lg border cinzel-font text-[9px] md:text-xs font-bold transition-all bg-gray-700 border-yellow-500 text-white shadow-[0_0_10px_rgba(229,181,103,0.3)]">ОБЫЧНЫЙ</button>
+                        <button id="btn-mode-adv" data-i18n="modeAdv" onclick="App.setRollMode('adv')" class="flex-1 px-1 md:px-2 py-2 rounded-lg border border-gray-600 bg-gray-800/80 text-gray-400 hover:text-green-400 hover:border-green-500 transition-all cinzel-font text-[9px] md:text-xs font-bold">ПРЕИМУЩЕСТВО</button>
+                        <button id="btn-mode-dis" data-i18n="modeDis" onclick="App.setRollMode('dis')" class="flex-1 px-1 md:px-2 py-2 rounded-lg border border-gray-600 bg-gray-800/80 text-gray-400 hover:text-red-400 hover:border-red-500 transition-all cinzel-font text-[9px] md:text-xs font-bold">ПОМЕХА</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-900/40 p-5 rounded-xl border border-gray-800 flex-grow">
+                <h2 data-i18n="addDiceTitle" class="text-xl cinzel-font text-yellow-600 mb-4 border-b border-gray-700 pb-2">2. Добавить кубики</h2>
+                
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="App.addDice(4, '#ef4444')" class="btn-dice rounded-lg py-3 cinzel-font font-bold text-red-400 border-red-900/50 hover:bg-red-900/20">d4</button>
+                    <button onclick="App.addDice(6, '#f97316')" class="btn-dice rounded-lg py-3 cinzel-font font-bold text-orange-400 border-orange-900/50 hover:bg-orange-900/20">d6</button>
+                    <button onclick="App.addDice(8, '#84cc16')" class="btn-dice rounded-lg py-3 cinzel-font font-bold text-lime-400 border-lime-900/50 hover:bg-lime-900/20">d8</button>
+                    <button onclick="App.addDice(10, '#3b82f6')" class="btn-dice rounded-lg py-3 cinzel-font font-bold text-blue-400 border-blue-900/50 hover:bg-blue-900/20">d10</button>
+                    <button onclick="App.addDice(12, '#a855f7')" class="btn-dice rounded-lg py-3 cinzel-font font-bold text-purple-400 border-purple-900/50 hover:bg-purple-900/20">d12</button>
+                    <button onclick="App.addDice(20, '#eab308')" class="btn-dice rounded-lg py-3 cinzel-font font-bold text-yellow-400 border-yellow-900/50 hover:bg-yellow-900/20">d20</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ПРАВАЯ КОЛОНКА: Текущий Пул и Действие -->
+        <div class="flex flex-col gap-6">
+            <div class="bg-gray-900/40 p-5 rounded-xl border border-gray-800 flex-grow flex flex-col">
+                <div class="flex justify-between items-center border-b border-gray-700 pb-2 mb-4">
+                    <h2 data-i18n="yourRollTitle" class="text-xl cinzel-font text-yellow-600">3. Твой бросок</h2>
+                    <button data-i18n="clear" onclick="App.clearPool()" class="text-xs md:text-sm text-red-400 hover:text-red-300 underline font-sans tracking-wider">Очистить</button>
+                </div>
+                
+                <div id="dice-pool-container" class="flex flex-wrap gap-2 min-h-[120px] content-start items-start bg-black/30 p-4 rounded-lg border border-gray-800 mb-4">
+                    <p id="empty-pool-text" data-i18n="emptyPool" class="text-gray-500 italic text-center w-full mt-8">Выбери кубики слева...</p>
+                </div>
+
+                <button id="btn-roll" onclick="App.roll()" disabled class="btn-action w-full py-4 text-2xl cinzel-font font-bold rounded-xl mt-auto uppercase tracking-widest flex flex-col items-center justify-center">
+                    <span data-i18n="rollBtn">Сделать Бросок</span>
+                    <span id="roll-formula-hint" class="text-xs font-sans tracking-normal opacity-70 font-normal mt-1">...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         HTML ОВЕРЛЕЙ АНИМАЦИИ
+         ========================================== -->
+    <div id="dice-overlay" class="fixed inset-0 z-[105] flex flex-col items-center justify-center pointer-events-none hidden bg-black/90 backdrop-blur-md transition-opacity duration-300 opacity-0">
+        
+        <div id="dice-target-container" class="absolute top-10 md:top-16 text-xl md:text-3xl text-gray-300 cinzel-font bg-black/50 px-6 py-2 rounded-full border border-gray-700" style="text-shadow: 1px 1px 3px black;">
+            <span data-i18n="overlayTarget">Цель (Сложность):</span> <span id="dice-target-value" class="text-yellow-400 font-bold ml-2 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">15</span>
+        </div>
+        
+        <div id="dice-render-container" class="flex flex-wrap justify-center items-center gap-4 md:gap-8 min-h-[200px] px-4 w-full max-w-6xl mt-16">
+            <!-- Кубики генерируются здесь -->
+        </div>
+        
+        <div id="dice-modifiers" class="flex flex-wrap gap-3 mt-8 min-h-[2.5rem] items-center justify-center font-bold text-xl md:text-2xl cinzel-font" style="text-shadow: 1px 1px 3px black;"></div>
+
+        <div class="h-32 mt-4 flex flex-col items-center justify-center">
+            <div id="dice-total-wrap" class="font-bold text-3xl md:text-4xl text-gray-400 mb-2 transition-opacity duration-300 opacity-0 cinzel-font flex items-center" style="text-shadow: 1px 1px 3px black;">
+                <span data-i18n="overlayTotal">Итого:</span> <span id="dice-total-value" class="text-white text-5xl md:text-6xl ml-4 font-bold">20</span>
+            </div>
+            <div id="dice-status-text" class="font-bold text-5xl md:text-7xl pointer-events-none tracking-widest uppercase opacity-0 cinzel-font" style="text-shadow: 2px 2px 10px black, 0 0 20px currentColor;"></div>
+        </div>
+        
+        <button id="close-overlay-btn" data-i18n="continueBtn" class="hidden mt-8 px-8 py-3 bg-gray-800 border border-gray-600 text-yellow-500 hover:text-white hover:bg-gray-700 hover:border-yellow-400 transition-all duration-300 rounded-xl cinzel-font font-bold text-xl drop-shadow-lg cursor-pointer pointer-events-auto">Продолжить</button>
+    </div>
+
+    <!-- ==========================================
+         JAVASCRIPT ЛОГИКА
+         ========================================== -->
+    <script>
+        // СЛОВАРЬ ПЕРЕВОДОВ
+        const i18n = {
+            ru: {
+                title: "Проверка Навыка",
+                subtitle: "Собери свой пул кубиков, введи параметры и бросай!",
+                paramTitle: "1. Параметры броска",
+                withTarget: "С ЦЕЛЬЮ",
+                targetDc: "Цель (Сложность)",
+                modifier: "Модификатор (+/-)",
+                specialCond: "Особые условия",
+                modeNormal: "ОБЫЧНЫЙ",
+                modeAdv: "ПРЕИМУЩЕСТВО",
+                modeDis: "ПОМЕХА",
+                addDiceTitle: "2. Добавить кубики",
+                yourRollTitle: "3. Твой бросок",
+                clear: "Очистить",
+                emptyPool: "Выбери кубики слева...",
+                rollBtn: "Сделать Бросок",
+                waiting: "Ожидание пула...",
+                formula: "Формула: ",
+                maxOf: "Макс из (",
+                minOf: "Мин из (",
+                maxAlert: "Максимум 10 кубиков за бросок!",
+                overlayTarget: "Цель: ",
+                overlayTotal: "Итого: ",
+                modShort: "Мод.",
+                success: "УСПЕХ!",
+                fail: "ПРОВАЛ!",
+                continueBtn: "Продолжить"
+            },
+            en: {
+                title: "Skill Check",
+                subtitle: "Build your dice pool, set parameters, and roll!",
+                paramTitle: "1. Roll Parameters",
+                withTarget: "TARGET DC",
+                targetDc: "Target (DC)",
+                modifier: "Modifier (+/-)",
+                specialCond: "Special Conditions",
+                modeNormal: "NORMAL",
+                modeAdv: "ADVANTAGE",
+                modeDis: "DISADVANTAGE",
+                addDiceTitle: "2. Add Dice",
+                yourRollTitle: "3. Your Roll",
+                clear: "Clear",
+                emptyPool: "Select dice from the left...",
+                rollBtn: "Roll Dice",
+                waiting: "Waiting for dice pool...",
+                formula: "Formula: ",
+                maxOf: "Max of (",
+                minOf: "Min of (",
+                maxAlert: "Maximum of 10 dice per roll!",
+                overlayTarget: "Target (DC): ",
+                overlayTotal: "Total: ",
+                modShort: "Mod",
+                success: "SUCCESS!",
+                fail: "FAIL!",
+                continueBtn: "Continue"
+            }
+        };
+
+        let currentLang = 'en';
+
+        function t(key) {
+            return i18n[currentLang][key];
+        }
+
+        const View = {
+            sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); },
+
+            getDiceSVG(type, color) {
+                const stroke = "#e5b567";
+                switch(type) {
+                    case 4: 
+                        return `<svg width="150" height="150" viewBox="0 0 100 100">
+                                    <polygon points="50,6 94,74 6,74" fill="${color}"/>
+                                    <g stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round">
+                                        <polygon points="50,6 50,54 6,74" fill="rgba(255,255,255,0.15)"/>
+                                        <polygon points="50,6 94,74 50,54" fill="rgba(0,0,0,0.1)"/>
+                                        <polygon points="6,74 94,74 50,54" fill="rgba(0,0,0,0.3)"/>
+                                        <polygon points="50,6 94,74 6,74" fill="transparent"/>
+                                    </g>
+                                </svg>`;
+                    case 6: 
+                        return `<svg width="150" height="150" viewBox="0 0 100 100">
+                                    <rect x="15" y="15" width="70" height="70" rx="10" fill="${color}"/>
+                                    <g stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round">
+                                        <rect x="15" y="15" width="70" height="70" rx="10" fill="transparent"/>
+                                        <rect x="22" y="22" width="56" height="56" rx="6" fill="rgba(255,255,255,0.05)"/>
+                                    </g>
+                                </svg>`;
+                    case 8: 
+                        return `<svg width="150" height="150" viewBox="0 0 100 100">
+                                    <polygon points="50,5 95,50 50,95 5,50" fill="${color}"/>
+                                    <g stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round">
+                                        <polygon points="50,5 95,50 50,50" fill="rgba(255,255,255,0.1)"/>
+                                        <polygon points="50,5 5,50 50,50" fill="rgba(255,255,255,0.2)"/>
+                                        <polygon points="50,95 95,50 50,50" fill="rgba(0,0,0,0.2)"/>
+                                        <polygon points="50,95 5,50 50,50" fill="rgba(0,0,0,0.4)"/>
+                                    </g>
+                                </svg>`;
+                    case 10: 
+                        return `<svg width="150" height="150" viewBox="0 0 100 100">
+                                    <polygon points="50,5 95,30 95,70 50,95 5,70 5,30" fill="${color}"/>
+                                    <g stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round">
+                                        <polygon points="50,5 95,30 95,70 50,95 5,70 5,30" fill="transparent"/>
+                                        <polygon points="50,5 50,45 95,30" fill="rgba(0,0,0,0.15)"/>
+                                        <polygon points="50,5 5,30 50,45" fill="rgba(0,0,0,0.35)"/>
+                                        <polygon points="50,45 95,30 95,70" fill="rgba(0,0,0,0.05)"/>
+                                        <polygon points="50,45 5,30 5,70" fill="rgba(0,0,0,0.45)"/>
+                                        <polygon points="50,45 95,70 50,95" fill="rgba(0,0,0,0.25)"/>
+                                        <polygon points="50,45 5,70 50,95" fill="rgba(0,0,0,0.4)"/>
+                                    </g>
+                                </svg>`;
+                    case 12:
+                        return `<svg width="150" height="150" viewBox="0 0 100 100">
+                                    <polygon points="50,2 95,28 95,72 50,98 5,72 5,28" fill="${color}"/>
+                                    <g stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round">
+                                        <polygon points="50,2 95,28 95,72 50,98 5,72 5,28" fill="transparent"/>
+                                        <polygon points="50,22 76,40 66,70 34,70 24,40" fill="rgba(255,255,255,0.05)"/>
+                                        <polygon points="50,2 95,28 76,40 50,22" fill="rgba(255,255,255,0.15)"/>
+                                        <polygon points="50,2 5,28 24,40 50,22" fill="rgba(255,255,255,0.25)"/>
+                                        <polygon points="95,28 95,72 66,70 76,40" fill="rgba(0,0,0,0.1)"/>
+                                        <polygon points="5,28 5,72 34,70 24,40" fill="rgba(0,0,0,0.3)"/>
+                                        <polygon points="50,98 95,72 66,70 34,70" fill="rgba(0,0,0,0.2)"/>
+                                        <polygon points="50,98 5,72 34,70" fill="rgba(0,0,0,0.4)"/>
+                                    </g>
+                                </svg>`;
+                    default: 
+                        return `<svg width="150" height="150" viewBox="0 0 100 100">
+                                    <polygon points="50,2 8,26 8,74 50,98 92,74 92,26" fill="${color}"/>
+                                    <g stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round">
+                                        <polygon points="50,24 73,63 27,63" fill="transparent"/>
+                                        <polygon points="50,2 8,26 50,24" fill="rgba(255,255,255,0.15)"/>
+                                        <polygon points="50,2 92,26 50,24" fill="rgba(255,255,255,0.05)"/>
+                                        <polygon points="8,26 27,63 50,24" fill="rgba(255,255,255,0.1)"/>
+                                        <polygon points="92,26 73,63 50,24" fill="rgba(0,0,0,0.05)"/>
+                                        <polygon points="8,26 8,74 27,63" fill="rgba(0,0,0,0.1)"/>
+                                        <polygon points="92,26 92,74 73,63" fill="rgba(0,0,0,0.2)"/>
+                                        <polygon points="8,74 50,98 27,63" fill="rgba(0,0,0,0.15)"/>
+                                        <polygon points="92,74 50,98 73,63" fill="rgba(0,0,0,0.3)"/>
+                                        <polygon points="27,63 73,63 50,98" fill="rgba(0,0,0,0.35)"/>
+                                    </g>
+                                </svg>`;
+                }
+            },
+
+            async runAnimation(diceResults, modifier, total, targetDc, isSuccess, dropIndices = []) {
+                const overlay = document.getElementById('dice-overlay'); 
+                const container = document.getElementById('dice-render-container');
+                const st = document.getElementById('dice-status-text');
+                const modsDiv = document.getElementById('dice-modifiers'); 
+                const tWrap = document.getElementById('dice-total-wrap');
+                const tValue = document.getElementById('dice-total-value'); 
+                
+                st.innerText = ''; 
+                st.className = "font-bold text-5xl md:text-7xl pointer-events-none tracking-widest uppercase opacity-0 cinzel-font"; 
+                modsDiv.innerHTML = ''; 
+                tWrap.style.opacity = '0';
+                container.innerHTML = '';
+
+                const targetCont = document.getElementById('dice-target-container');
+                if (targetDc !== null) {
+                    document.getElementById('dice-target-value').innerText = targetDc;
+                    targetCont.classList.remove('hidden');
+                } else {
+                    targetCont.classList.add('hidden');
+                }
+
+                const diceElements = [];
+                const valueElements = [];
+
+                diceResults.forEach((die, idx) => {
+                    const wrapper = document.createElement('div');
+                    const scaleClass = diceResults.length > 5 ? 'scale-50 md:scale-75' : 'scale-75 md:scale-100';
+                    wrapper.className = `relative transform ${scaleClass} opacity-0`;
+                    
+                    const svgCont = document.createElement('div');
+                    svgCont.className = 'drop-shadow-2xl mx-auto';
+                    svgCont.innerHTML = this.getDiceSVG(die.type, die.color);
+                    
+                    const valCont = document.createElement('div');
+                    valCont.className = 'absolute inset-0 flex items-center justify-center font-bold text-5xl text-white cinzel-font';
+                    valCont.style.textShadow = '2px 2px 4px black, 0 0 10px rgba(0,0,0,0.8)';
+                    valCont.style.transform = (die.type === 4) ? 'translateY(-2px)' : 'none';
+                    
+                    wrapper.appendChild(svgCont);
+                    wrapper.appendChild(valCont);
+                    container.appendChild(wrapper);
+                    
+                    diceElements.push(wrapper);
+                    valueElements.push(valCont);
+                });
+
+                overlay.classList.remove('hidden'); 
+                await this.sleep(20); 
+                overlay.classList.remove('opacity-0');
+                
+                diceElements.forEach((el, idx) => {
+                    el.style.animationDelay = `${idx * 150}ms`;
+                    el.classList.add('dice-roll-anim');
+                });
+
+                let scrambleInt = setInterval(() => { 
+                    valueElements.forEach((v, i) => {
+                        v.innerText = Math.floor(Math.random() * diceResults[i].type) + 1; 
+                    });
+                }, 50);
+                
+                try { 
+                    await this.sleep(600 + (diceResults.length - 1) * 150); 
+                } finally { 
+                    clearInterval(scrambleInt); 
+                }
+                
+                diceResults.forEach((die, idx) => {
+                    valueElements[idx].innerText = die.val;
+                    diceElements[idx].classList.remove('dice-roll-anim');
+                    
+                    if (dropIndices.includes(idx)) {
+                        diceElements[idx].style.transition = 'all 0.5s ease';
+                        diceElements[idx].style.opacity = '0.3';
+                        diceElements[idx].style.transform = 'scale(0.7)';
+                        diceElements[idx].style.filter = 'grayscale(100%)';
+                    } else {
+                        let pulseClass = 'pulse-neutral';
+                        if (targetDc !== null) {
+                            pulseClass = isSuccess ? 'pulse-success' : 'pulse-fail';
+                        }
+                        
+                        diceElements[idx].classList.add(pulseClass);
+                        diceElements[idx].style.opacity = '1';
+                    }
+                });
+
+                if (modifier !== 0) {
+                    let span = document.createElement('span'); 
+                    const colorClass = modifier > 0 ? 'text-green-400' : 'text-red-400';
+                    const sign = modifier > 0 ? '+' : '';
+                    
+                    span.innerHTML = `<span class="${colorClass} font-bold">${sign}${modifier}</span> <span class="text-sm text-gray-400">${t('modShort')}</span>`;
+                    span.className = 'mod-pop opacity-0 drop-shadow-md bg-black/60 px-4 py-2 rounded-lg border border-gray-600/50';
+                    modsDiv.appendChild(span);
+                    await this.sleep(400);
+                } else {
+                    await this.sleep(200);
+                }
+
+                tValue.innerText = total; 
+                tWrap.style.opacity = '1'; 
+                
+                if (targetDc !== null) {
+                    st.innerText = isSuccess ? t('success') : t('fail');
+                    st.classList.add(isSuccess ? 'text-green-400' : 'text-red-500', 'status-float');
+                }
+
+                await this.sleep(1500);
+                
+                const closeBtn = document.getElementById('close-overlay-btn');
+                closeBtn.classList.remove('hidden');
+                closeBtn.style.opacity = '0';
+                
+                await this.sleep(50);
+                closeBtn.style.opacity = '1';
+
+                return new Promise(resolve => {
+                    closeBtn.onclick = async () => {
+                        closeBtn.style.opacity = '0';
+                        overlay.classList.add('opacity-0'); 
+                        await this.sleep(300);
+                        overlay.classList.add('hidden'); 
+                        closeBtn.classList.add('hidden');
+                        resolve();
+                    };
+                });
+            }
+        };
+
+        const App = {
+            pool: [],
+            isRolling: false,
+            isCheckMode: false,
+            rollMode: 'normal', 
+
+            toggleLanguage() {
+                currentLang = currentLang === 'ru' ? 'en' : 'ru';
+                const toggleBtn = document.getElementById('lang-toggle-btn');
+                // Кнопка показывает язык, на который можно переключиться
+                toggleBtn.innerText = currentLang === 'ru' ? 'EN' : 'RU';
+                this.updateUITexts();
+                this.renderPool(); // Обновляем формулы с учетом языка
+            },
+
+            updateUITexts() {
+                const elements = document.querySelectorAll('[data-i18n]');
+                elements.forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (i18n[currentLang] && i18n[currentLang][key]) {
+                        el.innerText = i18n[currentLang][key];
+                    }
+                });
+            },
+
+            setRollMode(mode) {
+                this.rollMode = mode;
+                
+                const btnNormal = document.getElementById('btn-mode-normal');
+                const btnAdv = document.getElementById('btn-mode-adv');
+                const btnDis = document.getElementById('btn-mode-dis');
+                
+                const inactiveClasses = ['border-gray-600', 'bg-gray-800/80', 'text-gray-400'];
+                btnNormal.className = `flex-1 px-1 md:px-2 py-2 rounded-lg border cinzel-font text-[9px] md:text-xs font-bold transition-all hover:text-yellow-400 hover:border-yellow-500 ${inactiveClasses.join(' ')}`;
+                btnAdv.className = `flex-1 px-1 md:px-2 py-2 rounded-lg border cinzel-font text-[9px] md:text-xs font-bold transition-all hover:text-green-400 hover:border-green-500 ${inactiveClasses.join(' ')}`;
+                btnDis.className = `flex-1 px-1 md:px-2 py-2 rounded-lg border cinzel-font text-[9px] md:text-xs font-bold transition-all hover:text-red-400 hover:border-red-500 ${inactiveClasses.join(' ')}`;
+
+                if (mode === 'normal') {
+                    btnNormal.className = "flex-1 px-1 md:px-2 py-2 rounded-lg border cinzel-font text-[9px] md:text-xs font-bold transition-all bg-gray-700 border-yellow-500 text-white shadow-[0_0_10px_rgba(229,181,103,0.3)]";
+                } else if (mode === 'adv') {
+                    btnAdv.className = "flex-1 px-1 md:px-2 py-2 rounded-lg border cinzel-font text-[9px] md:text-xs font-bold transition-all bg-green-900/40 border-green-500 text-white shadow-[0_0_10px_rgba(74,222,128,0.3)]";
+                } else if (mode === 'dis') {
+                    btnDis.className = "flex-1 px-1 md:px-2 py-2 rounded-lg border cinzel-font text-[9px] md:text-xs font-bold transition-all bg-red-900/40 border-red-500 text-white shadow-[0_0_10px_rgba(239,68,68,0.3)]";
+                }
+                
+                this.renderPool(); 
+            },
+
+            toggleMode() {
+                this.isCheckMode = document.getElementById('mode-toggle').checked;
+                const dcContainer = document.getElementById('dc-container');
+                
+                if (this.isCheckMode) {
+                    dcContainer.classList.remove('opacity-30', 'grayscale', 'pointer-events-none');
+                } else {
+                    dcContainer.classList.add('opacity-30', 'grayscale', 'pointer-events-none');
+                }
+            },
+
+            changeValue(inputId, delta) {
+                const input = document.getElementById(inputId);
+                let val = parseInt(input.value) || 0;
+                val += delta;
+                
+                if (inputId === 'input-dc' && val < 1) val = 1;
+                
+                input.value = val;
+                
+                if (inputId === 'input-mod') {
+                    this.renderPool();
+                }
+            },
+
+            addDice(type, colorHex) {
+                if (this.pool.length >= 10) {
+                    alert(t('maxAlert'));
+                    return;
+                }
+                this.pool.push({ type: type, color: colorHex });
+                this.renderPool();
+            },
+
+            clearPool() {
+                this.pool = [];
+                this.renderPool();
+            },
+
+            renderPool() {
+                const container = document.getElementById('dice-pool-container');
+                const emptyText = document.getElementById('empty-pool-text');
+                const btnRoll = document.getElementById('btn-roll');
+                const hint = document.getElementById('roll-formula-hint');
+
+                Array.from(container.children).forEach(child => {
+                    if (child.id !== 'empty-pool-text') child.remove();
+                });
+
+                if (this.pool.length === 0) {
+                    emptyText.style.display = 'block';
+                    btnRoll.disabled = true;
+                    hint.innerText = t('waiting');
+                    return;
+                }
+
+                emptyText.style.display = 'none';
+                btnRoll.disabled = false;
+
+                let counts = {};
+                this.pool.forEach((die, index) => {
+                    const badge = document.createElement('div');
+                    badge.className = `pool-item px-3 py-1 rounded border text-sm font-bold cinzel-font flex items-center gap-2 bg-black/50`;
+                    badge.style.borderColor = die.color;
+                    badge.style.color = die.color;
+                    badge.style.animationDelay = `${index * 50}ms`;
+                    
+                    badge.innerHTML = `
+                        d${die.type}
+                        <button onclick="App.removeDice(${index})" class="text-gray-400 hover:text-white ml-1">×</button>
+                    `;
+                    container.appendChild(badge);
+
+                    counts[die.type] = (counts[die.type] || 0) + 1;
+                });
+
+                let formulaParts = [];
+                for (const [type, count] of Object.entries(counts)) {
+                    formulaParts.push(`${count}d${type}`);
+                }
+                const modVal = parseInt(document.getElementById('input-mod').value) || 0;
+                let modStr = modVal === 0 ? "" : (modVal > 0 ? ` + ${modVal}` : ` - ${Math.abs(modVal)}`);
+                
+                let prefix = "";
+                let suffix = "";
+                if (this.rollMode === 'adv') { prefix = t('maxOf'); suffix = ")"; }
+                else if (this.rollMode === 'dis') { prefix = t('minOf'); suffix = ")"; }
+
+                hint.innerText = `${t('formula')}${prefix}${formulaParts.join(' + ')}${suffix}${modStr}`;
+            },
+
+            removeDice(index) {
+                this.pool.splice(index, 1);
+                this.renderPool();
+            },
+
+            async roll() {
+                if(this.isRolling || this.pool.length === 0) return;
+                this.isRolling = true;
+                document.getElementById('btn-roll').disabled = true;
+
+                const targetDc = this.isCheckMode ? (parseInt(document.getElementById('input-dc').value) || 0) : null;
+                const modifier = parseInt(document.getElementById('input-mod').value) || 0;
+
+                let diceResults = [];
+                
+                this.pool.forEach(die => {
+                    const val = Math.floor(Math.random() * die.type) + 1;
+                    diceResults.push({
+                        type: die.type,
+                        color: die.color,
+                        val: val
+                    });
+                });
+
+                let sumDice = 0;
+                let dropIndices = [];
+
+                if (this.rollMode === 'adv' && diceResults.length > 0) {
+                    let maxIdx = 0;
+                    let maxVal = diceResults[0].val;
+                    for (let i = 1; i < diceResults.length; i++) {
+                        if (diceResults[i].val > maxVal) {
+                            maxVal = diceResults[i].val;
+                            maxIdx = i;
+                        }
+                    }
+                    sumDice = maxVal;
+                    for (let i = 0; i < diceResults.length; i++) {
+                        if (i !== maxIdx) dropIndices.push(i);
+                    }
+                } else if (this.rollMode === 'dis' && diceResults.length > 0) {
+                    let minIdx = 0;
+                    let minVal = diceResults[0].val;
+                    for (let i = 1; i < diceResults.length; i++) {
+                        if (diceResults[i].val < minVal) {
+                            minVal = diceResults[i].val;
+                            minIdx = i;
+                        }
+                    }
+                    sumDice = minVal;
+                    for (let i = 0; i < diceResults.length; i++) {
+                        if (i !== minIdx) dropIndices.push(i);
+                    }
+                } else {
+                    sumDice = diceResults.reduce((sum, d) => sum + d.val, 0);
+                }
+
+                const total = sumDice + modifier;
+                const isSuccess = this.isCheckMode ? (total >= targetDc) : null;
+
+                await View.runAnimation(diceResults, modifier, total, targetDc, isSuccess, dropIndices);
+
+                this.isRolling = false;
+                document.getElementById('btn-roll').disabled = false;
+            }
+        };
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            App.updateUITexts();
+            App.renderPool();
+        });
+
+        document.getElementById('input-mod').addEventListener('input', () => App.renderPool());
+    </script>
+</body>
+</html>
